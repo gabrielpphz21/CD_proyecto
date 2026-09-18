@@ -46,7 +46,7 @@ func main() {
 
 	mux.HandleFunc("/heartbeat", withInstanceHeader(heartbeatHandler))
 
-	err1 := http.ListenAndServe(":8082", mux)
+	err1 := http.ListenAndServe(":8080", mux)
 	if err1 != nil {
 		log.Fatal(err1)
 	}

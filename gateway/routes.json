@@ -1,0 +1,131 @@
+[
+  {
+    "prefix": "/energy-transaction",
+    "targets": [
+      "http://back_info-1:8080",
+      "http://back_info-2:8080",
+      "http://back_info-3:8080"
+    ]
+  },
+  {
+    "prefix": "/energy-transaction/",
+    "targets": [
+      "http://back_info-1:8080",
+      "http://back_info-2:8080",
+      "http://back_info-3:8080"
+    ]
+  },
+  {
+    "prefix": "/destination",
+    "targets": [
+      "http://back_info-1:8080",
+      "http://back_info-2:8080",
+      "http://back_info-3:8080"
+    ]
+  },
+  {
+    "prefix": "/destination/",
+    "targets": [
+      "http://back_info-1:8080",
+      "http://back_info-2:8080",
+      "http://back_info-3:8080"
+    ]
+  },
+  {
+    "prefix": "/take-off",
+    "targets": [
+      "http://back_info-1:8080",
+      "http://back_info-2:8080",
+      "http://back_info-3:8080"
+    ]
+  },
+  {
+    "prefix": "/take-off/",
+    "targets": [
+      "http://back_info-1:8080",
+      "http://back_info-2:8080",
+      "http://back_info-3:8080"
+    ]
+  },
+  {
+    "prefix": "/tenant",
+    "targets": [
+      "http://back_info-1:8080",
+      "http://back_info-2:8080",
+      "http://back_info-3:8080"
+    ]
+  },
+  {
+    "prefix": "/tenant/",
+    "targets": [
+      "http://back_info-1:8080",
+      "http://back_info-2:8080",
+      "http://back_info-3:8080"
+    ]
+  },
+{
+    "prefix": "/satelite",
+    "targets": [
+      "http://back_satelites-1:8080",
+      "http://back_satelites-2:8080",
+      "http://back_satelites-3:8080"
+    ]
+  },
+  {
+    "prefix": "/satelite/",
+    "targets": [
+      "http://back_satelites-1:8080",
+      "http://back_satelites-2:8080",
+      "http://back_satelites-3:8080"
+    ]
+  },
+{
+    "prefix": "/hyper-satelite",
+    "targets": [
+      "http://back_satelites-1:8080",
+      "http://back_satelites-2:8080",
+      "http://back_satelites-3:8080"
+    ]
+  },
+  {
+    "prefix": "/hyper-satelite/",
+    "targets": [
+      "http://back_satelites-1:8080",
+      "http://back_satelites-2:8080",
+      "http://back_satelites-3:8080"
+    ]
+  },
+  
+  {
+    "prefix": "/rocket",
+    "targets": [
+      "http://back_rockets-1:8080",
+      "http://back_rockets-2:8080",
+      "http://back_rockets-3:8080"
+    ]
+  },
+   {
+    "prefix": "/rocket/",
+    "targets": [
+      "http://back_rockets-1:8080",
+      "http://back_rockets-2:8080",
+      "http://back_rockets-3:8080"
+    ]
+  },
+   {
+    "prefix": "/hyper-rocket",
+    "targets": [
+      "http://back_rockets-1:8080",
+      "http://back_rockets-2:8080",
+      "http://back_rockets-3:8080"
+    ]
+  },
+   {
+    "prefix": "/hyper-rocket/",
+    "targets": [
+      "http://back_rockets-1:8080",
+      "http://back_rockets-2:8080",
+      "http://back_rockets-3:8080"
+    ]
+  }
+]
