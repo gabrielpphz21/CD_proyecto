@@ -1,6 +1,6 @@
 [
   {
-    "prefix": "/energy-transaction",
+    "route": "/energy-transaction",
     "targets": [
       "http://back_info-1:8080",
       "http://back_info-2:8080",
@@ -8,7 +8,7 @@
     ]
   },
   {
-    "prefix": "/energy-transaction/",
+    "route": "/energy-transaction/",
     "targets": [
       "http://back_info-1:8080",
       "http://back_info-2:8080",
@@ -16,7 +16,7 @@
     ]
   },
   {
-    "prefix": "/destination",
+    "route": "/destination",
     "targets": [
       "http://back_info-1:8080",
       "http://back_info-2:8080",
@@ -24,7 +24,7 @@
     ]
   },
   {
-    "prefix": "/destination/",
+    "route": "/destination/",
     "targets": [
       "http://back_info-1:8080",
       "http://back_info-2:8080",
@@ -32,7 +32,7 @@
     ]
   },
   {
-    "prefix": "/take-off",
+    "route": "/take-off",
     "targets": [
       "http://back_info-1:8080",
       "http://back_info-2:8080",
@@ -40,7 +40,7 @@
     ]
   },
   {
-    "prefix": "/take-off/",
+    "route": "/take-off/",
     "targets": [
       "http://back_info-1:8080",
       "http://back_info-2:8080",
@@ -48,7 +48,7 @@
     ]
   },
   {
-    "prefix": "/tenant",
+    "route": "/tenant",
     "targets": [
       "http://back_info-1:8080",
       "http://back_info-2:8080",
@@ -56,7 +56,7 @@
     ]
   },
   {
-    "prefix": "/tenant/",
+    "route": "/tenant/",
     "targets": [
       "http://back_info-1:8080",
       "http://back_info-2:8080",
@@ -64,7 +64,7 @@
     ]
   },
 {
-    "prefix": "/satelite",
+    "route": "/satelite",
     "targets": [
       "http://back_satelites-1:8080",
       "http://back_satelites-2:8080",
@@ -72,7 +72,7 @@
     ]
   },
   {
-    "prefix": "/satelite/",
+    "route": "/satelite/",
     "targets": [
       "http://back_satelites-1:8080",
       "http://back_satelites-2:8080",
@@ -80,7 +80,7 @@
     ]
   },
 {
-    "prefix": "/hyper-satelite",
+    "route": "/hyper-satelite",
     "targets": [
       "http://back_satelites-1:8080",
       "http://back_satelites-2:8080",
@@ -88,7 +88,7 @@
     ]
   },
   {
-    "prefix": "/hyper-satelite/",
+    "route": "/hyper-satelite/",
     "targets": [
       "http://back_satelites-1:8080",
       "http://back_satelites-2:8080",
@@ -97,7 +97,7 @@
   },
   
   {
-    "prefix": "/rocket",
+    "route": "/rocket",
     "targets": [
       "http://back_rockets-1:8080",
       "http://back_rockets-2:8080",
@@ -105,7 +105,7 @@
     ]
   },
    {
-    "prefix": "/rocket/",
+    "route": "/rocket/",
     "targets": [
       "http://back_rockets-1:8080",
       "http://back_rockets-2:8080",
@@ -113,7 +113,7 @@
     ]
   },
    {
-    "prefix": "/hyper-rocket",
+    "route": "/hyper-rocket",
     "targets": [
       "http://back_rockets-1:8080",
       "http://back_rockets-2:8080",
@@ -121,7 +121,7 @@
     ]
   },
    {
-    "prefix": "/hyper-rocket/",
+    "route": "/hyper-rocket/",
     "targets": [
       "http://back_rockets-1:8080",
       "http://back_rockets-2:8080",

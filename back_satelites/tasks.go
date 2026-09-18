@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -93,9 +94,11 @@ func satelite_info(id string, connection *pgx.Conn) (*Satelite, []HyperSatelite,
 	defer rows.Close()
 	for rows.Next() {
 		var h_satelite HyperSatelite
+		var date_p time.Time
 		err1 := rows.Scan(&h_satelite.Id, &h_satelite.Energy, &h_satelite.Parts, &h_satelite.State, &h_satelite.X, &h_satelite.Y,
-			&h_satelite.Z, &h_satelite.Date,
+			&h_satelite.Z, &date_p,
 		)
+		h_satelite.Date = date_p.Format("2006-01-02 15:04:05")
 
 		if err1 != nil {
 			return nil, nil, err1

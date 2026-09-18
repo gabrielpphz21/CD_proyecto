@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -103,10 +104,12 @@ func rocket_info(id string, connection *pgx.Conn) (*Rocket, []HyperRocket, error
 
 	for rows.Next() {
 		var h_rocket HyperRocket
+		var date_p time.Time
 
 		err1 := rows.Scan(&h_rocket.Id, &h_rocket.Fuel, &h_rocket.Parts, &h_rocket.State, &h_rocket.X, &h_rocket.Y,
-			&h_rocket.Z, &h_rocket.Date,
+			&h_rocket.Z, &date_p,
 		)
+		h_rocket.Date = date_p.Format("2006-01-02 15:04:05")
 
 		if err1 != nil {
 			return nil, nil, err1
