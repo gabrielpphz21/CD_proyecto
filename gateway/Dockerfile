@@ -1,4 +1,4 @@
-FROM golang:1.27rc3-alpine3.24 as builder
+FROM golang:1.27rc3-alpine3.24 AS builder
 
 WORKDIR /golangApp
 
@@ -7,9 +7,9 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o main .
 
 
 #lightweight 
-FROM alpine3.24
+FROM alpine:3.24
 WORKDIR /golangApp
-COPY --from=builder /golangAPp/main .
+COPY --from=builder /golangApp/main .
 
 EXPOSE 8080
 CMD [ "./main" ]

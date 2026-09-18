@@ -1,28 +1,130 @@
 services:
 
-  back_info:
-    image: back_info:latest
+  back_info1:
+    build: ./back_info
+    environment:
+      - INSTANCE_ID=back_info-1
     depends_on:
       psqlDB:
         condition: service_healthy
-    ports:
-      - 8083:8083
+    networks:
+     - microservices-net
 
-  back_rockets:
-    image: back_cohetes:latest
+  back_info2:
+    build: ./back_info
+    environment:
+      - INSTANCE_ID=back_info-2
     depends_on:
       psqlDB:
         condition: service_healthy
-    ports:
-      - 8081:8081
+    networks:
+     - microservices-net
 
-  back_satelites:
-    image: back_satelites:latest
+  back_info3:
+    build: ./back_info
+    environment:
+      - INSTANCE_ID=back_info-3
     depends_on:
       psqlDB:
         condition: service_healthy
+    networks:
+     - microservices-net
+
+
+  back_rockets1:
+    build: ./back_cohetes
+    environment:
+      - INSTANCE_ID=back_rockets-1
+    depends_on:
+      psqlDB:
+        condition: service_healthy
+    networks:
+     - microservices-net
+
+  back_rockets2:
+    build: ./back_cohetes
+    environment:
+      - INSTANCE_ID=back_rockets-2
+    depends_on:
+      psqlDB:
+        condition: service_healthy
+    networks:
+     - microservices-net
+
+  back_rockets3:
+    build: ./back_cohetes
+    environment:
+      - INSTANCE_ID=back_rockets-3
+    depends_on:
+      psqlDB:
+        condition: service_healthy
+    networks:
+     - microservices-net
+
+  back_satelites1:
+    build: ./back_satelites
+    environment:
+      - INSTANCE_ID=back_satelites-1
+    depends_on:
+      psqlDB:
+        condition: service_healthy
+    networks:
+     - microservices-net
+
+
+  back_satelites2:
+    build: ./back_satelites
+    environment:
+      - INSTANCE_ID=back_satelites-2
+    depends_on:
+      psqlDB:
+        condition: service_healthy
+    networks:
+     - microservices-net
+
+
+  back_satelites3:
+    build: ./back_satelites
+    environment:
+      - INSTANCE_ID=back_satelites-3
+    depends_on:
+      psqlDB:
+        condition: service_healthy
+    networks:
+     - microservices-net
+
+
+  gateway:
+    build: ./gateway
     ports:
-      - 8082:8082
+    - "8000:8000"
+    depends_on:
+      back_info1:
+        condition: service_started
+      back_info2:
+        condition: service_started
+      back_info3:
+        condition: service_started
+
+      back_rockets1:
+        condition: service_started
+      back_rockets2:
+        condition: service_started
+      back_rockets3:
+        condition: service_started
+
+      back_satelites1:
+        condition: service_started
+      back_satelites2:
+        condition: service_started
+      back_satelites3:
+        condition: service_started
+
+      psqlDB:
+        condition: service_healthy
+
+    networks:
+      - microservices-net
       
   psqlDB:
     image: postgres:18.6-alpine3.24
@@ -42,6 +144,10 @@ services:
 
 volumes:
   postgres_data:
+
+networks:
+  microservices-net:
+    driver: bridge
 
 
 
