@@ -1,0 +1,7 @@
+satelites
+- DELETE
+- POST 
+- PUT
+- GET general 
+
+hyper_satelite
