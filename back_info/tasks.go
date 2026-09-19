@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 )
@@ -70,6 +71,7 @@ func get_Tenants(connection *pgx.Conn) ([]Tenant, error) {
 	defer rows.Close()
 	for rows.Next() {
 		var tnt Tenant
+
 		err1 := rows.Scan(&tnt.Id, &tnt.Name, &tnt.Tax_id)
 		tenants = append(tenants, tnt)
 
@@ -131,9 +133,10 @@ func get_energyTransactions(connection *pgx.Conn) ([]EnergyTransaction, error) {
 
 	for rows.Next() {
 		var e_t EnergyTransaction
-		err1 := rows.Scan(&e_t.ID, &e_t.Volume, &e_t.Origin, &e_t.Destination, &e_t.State, &e_t.Date)
+		var date_p time.Time
+		err1 := rows.Scan(&e_t.ID, &e_t.Volume, &e_t.Origin, &e_t.Destination, &e_t.State, &date_p)
 		e_transactions = append(e_transactions, e_t)
-
+		e_t.Date = date_p.Format("2006-01-02 15:04:05")
 		if err1 != nil {
 			return nil, err1
 		}
@@ -145,10 +148,13 @@ func get_energyTransactions(connection *pgx.Conn) ([]EnergyTransaction, error) {
 
 func get_energyTransactionsId(connection *pgx.Conn, energy_transaction_id string) (*EnergyTransaction, error) {
 	e_t := &EnergyTransaction{}
+	var date_p time.Time
 
 	query := "SELECT * FROM energy_transactions WHERE id=$1 ORDER BY date DESC LIMIT 100"
 	err := connection.QueryRow(context.Background(), query, energy_transaction_id).Scan(&e_t.ID,
-		&e_t.Volume, &e_t.Origin, &e_t.Destination, &e_t.State, &e_t.Date)
+		&e_t.Volume, &e_t.Origin, &e_t.Destination, &e_t.State, &date_p)
+
+	e_t.Date = date_p.Format("2006-01-02 15:04:05")
 
 	if err != nil {
 		return e_t, nil
@@ -194,6 +200,7 @@ func get_destinations(connection *pgx.Conn) ([]Destination, error) {
 
 	for rows.Next() {
 		var dtn Destination
+
 		err1 := rows.Scan(&dtn.Id, &dtn.Planet, &dtn.State)
 		destinations = append(destinations, dtn)
 
@@ -246,6 +253,7 @@ func get_takeoffs(connection *pgx.Conn) ([]TakeOff, error) {
 	rows, err := connection.Query(context.Background(), query)
 	var take_offs []TakeOff
 	defer rows.Close()
+	var date_p time.Time
 
 	if err != nil {
 		return nil, err
@@ -253,7 +261,8 @@ func get_takeoffs(connection *pgx.Conn) ([]TakeOff, error) {
 
 	for rows.Next() {
 		var tko TakeOff
-		err1 := rows.Scan(&tko.Id, &tko.Rocket, &tko.Date, &tko.Runway)
+		err1 := rows.Scan(&tko.Id, &tko.Rocket, &date_p, &tko.Runway)
+		tko.Date = date_p.Format("2006-01-02 15:04:05")
 		take_offs = append(take_offs, tko)
 
 		if err1 != nil {
@@ -268,7 +277,9 @@ func get_takeoffs(connection *pgx.Conn) ([]TakeOff, error) {
 func get_takeoffId(connection *pgx.Conn, take_off_id string) (*TakeOff, error) {
 	query := "SELECT * FROM take_offs WHERE id=$1 LIMIT 1"
 	tko := &TakeOff{}
-	err := connection.QueryRow(context.Background(), query, take_off_id).Scan(&tko.Id, &tko.Rocket, &tko.Date, &tko.Runway)
+	var date_p time.Time
+	err := connection.QueryRow(context.Background(), query, take_off_id).Scan(&tko.Id, &tko.Rocket, &date_p, &tko.Runway)
+	tko.Date = date_p.Format("2006-01-02 15:04:05")
 	if err != nil {
 		return nil, err
 	}
