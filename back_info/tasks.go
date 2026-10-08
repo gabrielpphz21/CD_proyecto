@@ -63,12 +63,14 @@ func update_tenant(tenant *Tenant, connection *pgx.Conn) error {
 func get_Tenants(connection *pgx.Conn) ([]Tenant, error) {
 	query := "SELECT * FROM tenants ORDER BY id DESC LIMIT 100"
 	rows, err := connection.Query(context.Background(), query)
-	var tenants []Tenant
 
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
+
+	var tenants []Tenant
+
 	for rows.Next() {
 		var tnt Tenant
 

@@ -48,6 +48,32 @@ type Gateway struct {
 	signal chan struct{}
 }
 
+func cors(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Allow your frontend
+		w.Header().Set("Access-Control-Allow-Origin", "*")
+
+		// Allowed HTTP methods
+		w.Header().Set(
+			"Access-Control-Allow-Methods",
+			"GET, POST, PUT, DELETE, OPTIONS",
+		)
+
+		// Allowed request headers
+		w.Header().Set(
+			"Access-Control-Allow-Headers",
+			"Content-Type, Authorization",
+		)
+
+		// Handle preflight request
+		if r.Method == http.MethodOptions {
+			w.WriteHeader(http.StatusNoContent)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
 func loadRouteBeTargets(path string) ([]RouteBeTargets, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
@@ -165,7 +191,7 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to load the routes file routes.json: %v", err)
 	}
-	gw := NewGateway(cfgs, 7)
+	gw := NewGateway(cfgs, 15)
 	gw.startHeartbeatMonitor(5 * time.Second)
 
 	mux := http.NewServeMux()
@@ -174,6 +200,7 @@ func main() {
 	mux.Handle("/", gw)
 
 	log.Println("Gateway listening on: 8000")
-	log.Fatal(http.ListenAndServe(":8000", mux))
+	handler := cors(mux)
+	log.Fatal(http.ListenAndServe(":8000", handler))
 
 }
