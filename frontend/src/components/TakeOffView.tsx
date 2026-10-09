@@ -25,7 +25,6 @@ function TakeOffView({ takeOff_id }: Props) {
       const data = await response.json();
       console.log("lo que llega", data);
       setTakeOff(data);
-      console.log("lo que se parsea", takeOff);
     }
 
     loadTakeOff();

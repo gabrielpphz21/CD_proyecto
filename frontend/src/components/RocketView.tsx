@@ -40,7 +40,6 @@ function RocketView({ rocket_id }: Props) {
       const data = await response.json();
       console.log("lo que llega", data);
       setRocketInfo(data);
-      console.log("lo que se parsea", rocketInfo);
     }
 
     loadSateliteInfo();

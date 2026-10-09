@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"log"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -26,24 +27,44 @@ type HyperSatelite struct {
 
 func insert_satelite(satelite *Satelite, connection *pgx.Conn) error {
 	query := "INSERT INTO satelites (tenant) VALUES ($1)"
+	log.Printf(
+		"QUERY  conn=%p query=%s",
+		conn,
+		query,
+	)
 	_, err := connection.Exec(context.Background(), query, satelite.Tenant)
 	return err
 }
 
 func delete_satelite(id string, connection *pgx.Conn) error {
 	query := "DELETE FROM satelites WHERE id = $1"
+	log.Printf(
+		"QUERY  conn=%p query=%s",
+		conn,
+		query,
+	)
 	_, err := connection.Exec(context.Background(), query, id)
 	return err
 }
 
 func update_satelite(satelite *Satelite, connection *pgx.Conn) error {
 	query := "UPDATE satelites SET tenant =  $1 WHERE id = $2"
+	log.Printf(
+		"QUERY  conn=%p query=%s",
+		conn,
+		query,
+	)
 	_, err := connection.Exec(context.Background(), query, satelite.Tenant, satelite.Id)
 	return err
 }
 
 func get_satelites(connection *pgx.Conn) ([]Satelite, error) {
 	query := "SELECT * FROM satelites LIMIT 100"
+	log.Printf(
+		"QUERY  conn=%p query=%s",
+		conn,
+		query,
+	)
 	rows, err := connection.Query(context.Background(), query)
 	if err != nil {
 		return nil, err
@@ -72,14 +93,25 @@ func insert_hypersatelites(h_satelite *HyperSatelite, connection *pgx.Conn) erro
 	query := "INSERT INTO hyper_satelite (id, energy, parts, state, x, y, z, date) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)"
 
 	parts_state := json.RawMessage(h_satelite.Parts)
+
+	log.Printf(
+		"QUERY  conn=%p query=%s",
+		conn,
+		query,
+	)
 	_, err := connection.Exec(context.Background(), query, h_satelite.Id, h_satelite.Energy,
+
 		parts_state, h_satelite.State, h_satelite.X, h_satelite.Y, h_satelite.Z, h_satelite.Date)
 	return err
 }
 
 func delete_hypersateliteLatest(id string, connection *pgx.Conn) error {
 	query := "DELETE FROM hyper_satelite WHERE id = $1 AND date= (SELECT MAX (date) FROM hyper_satelite WHERE id=$1)"
-
+	log.Printf(
+		"QUERY  conn=%p query=%s",
+		conn,
+		query,
+	)
 	_, err := connection.Exec(context.Background(), query, id)
 	return err
 }
@@ -87,6 +119,11 @@ func delete_hypersateliteLatest(id string, connection *pgx.Conn) error {
 func satelite_info(id string, connection *pgx.Conn) (*Satelite, []HyperSatelite, error) {
 	query := "SELECT * FROM hyper_satelite WHERE id=$1 ORDER BY date desc"
 	var h_satelites []HyperSatelite
+	log.Printf(
+		"QUERY  conn=%p query=%s",
+		conn,
+		query,
+	)
 	rows, err := connection.Query(context.Background(), query, id)
 	if err != nil {
 		return nil, nil, err
@@ -109,6 +146,11 @@ func satelite_info(id string, connection *pgx.Conn) (*Satelite, []HyperSatelite,
 
 	var satelite Satelite
 	query2 := "SELECT * FROM satelites WHERE id=$1"
+	log.Printf(
+		"QUERY  conn=%p query=%s",
+		conn,
+		query2,
+	)
 	rows2, err2 := connection.Query(context.Background(), query2, id)
 	if err2 != nil {
 		return nil, nil, err2

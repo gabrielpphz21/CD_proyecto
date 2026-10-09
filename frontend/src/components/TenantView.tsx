@@ -22,7 +22,6 @@ function TenantView({ tenant_id }: Props) {
       const data = await response.json();
       console.log("lo que llega", data);
       setTenant(data);
-      console.log("lo que se parsea", tenant);
     }
 
     loadTenant();

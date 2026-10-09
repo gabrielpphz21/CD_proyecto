@@ -28,7 +28,6 @@ function EnergyTransactionView({ energyTransaction_id }: Props) {
       const data = await response.json();
       console.log("lo que llega", data);
       setEnergyTransaction(data);
-      console.log("lo que se parsea", energyTransaction);
     }
 
     loadEnergyTransactionInfo();

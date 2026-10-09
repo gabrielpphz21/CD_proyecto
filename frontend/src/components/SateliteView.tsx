@@ -39,7 +39,6 @@ function SateliteView({ satelite_id }: Props) {
       const data = await response.json();
       console.log("lo que llega", data);
       setSateliteInfo(data);
-      console.log("lo que se parsea", sateliteInfo);
     }
 
     loadSateliteInfo();

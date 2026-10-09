@@ -24,7 +24,6 @@ function DestinationView({ destination_id }: Props) {
       const data = await response.json();
       console.log("lo que llega", data);
       setDestination(data);
-      console.log("lo que se parsea", destination);
     }
 
     loadDestination();
