@@ -14,11 +14,6 @@ func withInstanceHeader(next http.HandlerFunc) http.HandlerFunc {
 	}
 }
 
-func heartbeatHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("backend alive"))
-}
-
 func main() {
 
 	mux := http.NewServeMux()
@@ -43,11 +38,6 @@ func main() {
 		HyperRocketHandler(conn, w, r)
 	}))
 
-	mux.HandleFunc("/heartbeat", withInstanceHeader(heartbeatHandler))
-
-	err2 := http.ListenAndServe(":8080", mux)
-	if err2 != nil {
-		log.Fatal(err2)
-	}
+	log.Fatal(http.ListenAndServe(":8000", mux))
 
 }
