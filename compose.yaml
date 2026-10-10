@@ -94,8 +94,8 @@ services:
      - microservices-net
 
 
-  gateway:
-    build: ./gateway
+  nginx:
+    build: ./nginx
     ports:
     - "8000:8000"
     depends_on:
