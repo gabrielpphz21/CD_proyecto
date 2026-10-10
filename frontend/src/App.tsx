@@ -17,7 +17,7 @@ function App() {
     [-200, -200],
     [-100, -200],
   ];
-
+  //energyt, tenant, destination take-off
   return (
     <div>
       <Navbar></Navbar>

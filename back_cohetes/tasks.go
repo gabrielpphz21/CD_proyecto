@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"log"
 	"time"
 
 	"github.com/jackc/pgx/v5"
@@ -27,18 +28,33 @@ type HyperRocket struct {
 
 func insert_rocket(rocket *Rocket, connection *pgx.Conn) error {
 	query := "INSERT INTO rockets (satelite) VALUES ($1)"
+	log.Printf(
+		"QUERY  conn=%p query=%s",
+		conn,
+		query,
+	)
 	_, err := connection.Exec(context.Background(), query, rocket.Satelite)
 	return err
 }
 
 func delete_rocket(id string, connection *pgx.Conn) error {
 	query := "DELETE FROM rockets WHERE id = $1"
+	log.Printf(
+		"QUERY  conn=%p query=%s",
+		conn,
+		query,
+	)
 	_, err := connection.Exec(context.Background(), query, id)
 	return err
 }
 
 func update_rocket(rocket *Rocket, connection *pgx.Conn) error {
 	query := "UPDATE rockets SET satelite =  $1 WHERE id = $2"
+	log.Printf(
+		"QUERY  conn=%p query=%s",
+		conn,
+		query,
+	)
 	r, err := connection.Exec(context.Background(), query, rocket.Satelite, rocket.Id)
 	if err != nil {
 		return err
@@ -52,6 +68,11 @@ func update_rocket(rocket *Rocket, connection *pgx.Conn) error {
 
 func get_rockets(connection *pgx.Conn) ([]Rocket, error) {
 	query := "SELECT * FROM rockets LIMIT 100"
+	log.Printf(
+		"QUERY  conn=%p query=%s",
+		conn,
+		query,
+	)
 	rows, err := connection.Query(context.Background(), query)
 	if err != nil {
 		return nil, err
@@ -88,6 +109,11 @@ func insert_hyperrocket(h_rocket *HyperRocket, connection *pgx.Conn) error {
 
 func delete_hyperrocketLatest(id string, connection *pgx.Conn) error {
 	query := "DELETE FROM hyper_rocket WHERE id = $1 AND date= (SELECT MAX (date) FROM hyper_rocket WHERE id=$1)"
+	log.Printf(
+		"QUERY  conn=%p query=%s",
+		conn,
+		query,
+	)
 
 	_, err := connection.Exec(context.Background(), query, id)
 	return err
@@ -96,6 +122,11 @@ func delete_hyperrocketLatest(id string, connection *pgx.Conn) error {
 func rocket_info(id string, connection *pgx.Conn) (*Rocket, []HyperRocket, error) {
 	query := "SELECT * FROM hyper_rocket WHERE id=$1 ORDER BY date desc"
 	var h_rockets []HyperRocket
+	log.Printf(
+		"QUERY  conn=%p query=%s",
+		conn,
+		query,
+	)
 	rows, err := connection.Query(context.Background(), query, id)
 	if err != nil {
 		return nil, nil, err
@@ -119,7 +150,13 @@ func rocket_info(id string, connection *pgx.Conn) (*Rocket, []HyperRocket, error
 	}
 
 	var rocket Rocket
+
 	query2 := "SELECT * FROM rockets WHERE id=$1 LIMIT 1"
+	log.Printf(
+		"QUERY  conn=%p query=%s",
+		conn,
+		query2,
+	)
 	rows2, err2 := connection.Query(context.Background(), query2, id)
 	if err2 != nil {
 		return nil, nil, err2

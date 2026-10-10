@@ -1,4 +1,4 @@
-package main
+/*package main
 
 import (
 	"encoding/json"
@@ -12,10 +12,9 @@ import (
 	"sync/atomic"
 	"time"
 )
-
-type ServiceBeTargets struct {
-	Service string   `json:"service"`
-	Routes  []string `json:"routes"`
+// lo que sacas del json
+type RouteBeTargets struct {
+	Route   string   `json:"route"`
 	Targets []string `json:"targets"`
 }
 
@@ -25,14 +24,13 @@ type BackendT struct {
 	healthy atomic.Bool
 }
 
-type ServiceGroup struct {
-	Service  string
-	Routes_p []string
+type Routegroup struct {
+	Route_p  string
 	Backends []*BackendT
 	Counter  uint64
 }
 
-func (rg *ServiceGroup) next() *BackendT {
+func (rg *Routegroup) next() *BackendT {
 	n := len(rg.Backends)
 	for i := 0; i < n; i++ {
 		idx := atomic.AddUint64(&rg.Counter, 1) % uint64(n)
@@ -46,7 +44,7 @@ func (rg *ServiceGroup) next() *BackendT {
 
 // ----------GATEWAY
 type Gateway struct {
-	groups []*ServiceGroup
+	groups []*Routegroup
 	signal chan struct{}
 }
 
@@ -76,24 +74,25 @@ func cors(next http.Handler) http.Handler {
 		next.ServeHTTP(w, r)
 	})
 }
-func loadServiceBeTargets(path string) ([]ServiceBeTargets, error) {
+func loadRouteBeTargets(path string) ([]RouteBeTargets, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	var cfgs []ServiceBeTargets
+	var cfgs []RouteBeTargets
 	if err := json.Unmarshal(data, &cfgs); err != nil {
 		return nil, err
 	}
 	return cfgs, nil
 
 }
+	//instanciar cada backend de cada routegroup
 
-func NewGateway(cfgs []ServiceBeTargets, maxConcurrent int) *Gateway {
-	var groups []*ServiceGroup
+func NewGateway(cfgs []RouteBeTargets, maxConcurrent int) *Gateway {
+	var groups []*Routegroup
 
 	for _, cfg := range cfgs {
-		rg := &ServiceGroup{Routes_p: cfg.Routes, Service: cfg.Service}
+		rg := &Routegroup{Route_p: cfg.Route}
 		for _, t := range cfg.Targets {
 			target, err := url.Parse(t)
 			if err != nil {
@@ -119,21 +118,17 @@ func (g *Gateway) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer func() { <-g.signal }()
 
 	for _, rg := range g.groups {
-		for _, route_s := range rg.Routes_p {
-
-			if !strings.HasPrefix(r.URL.Path, route_s) {
-				continue
-			}
-			backend := rg.next()
-			if backend == nil {
-				http.Error(w, "no healthy backend available", http.StatusServiceUnavailable)
-				return
-			}
-			log.Printf("[%s] %s -> %s (prefix %q)", r.Method, r.URL.Path, backend.Path, route_s)
-			backend.Proxy.ServeHTTP(w, r)
+		if !strings.HasPrefix(r.URL.Path, rg.Route_p) {
+			continue
+		}
+		backend := rg.next()
+		if backend == nil {
+			http.Error(w, "no healthy backend available", http.StatusServiceUnavailable)
 			return
 		}
-
+		log.Printf("[%s] %s -> %s (prefix %q)", r.Method, r.URL.Path, backend.Path, rg.Route_p)
+		backend.Proxy.ServeHTTP(w, r)
+		return
 	}
 	http.NotFound(w, r)
 }
@@ -180,7 +175,7 @@ func (g *Gateway) statusHandler(w http.ResponseWriter, r *http.Request) {
 		for _, b := range rg.Backends {
 			list = append(list, backendStatus{Target: b.Path.String(), Healthy: b.healthy.Load()})
 		}
-		out[rg.Service] = list
+		out[rg.Route_p] = list
 	}
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(out)
@@ -192,14 +187,11 @@ func heartbeatHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	cfgs, err := loadServiceBeTargets("routes.json")
-	log.Println("cfgs:")
-	log.Println(cfgs)
+	cfgs, err := loadRouteBeTargets("routes.json")
 
 	if err != nil {
 		log.Fatalf("failed to load the routes file routes.json: %v", err)
 	}
-	log.Println("versión adecuada A MI")
 	gw := NewGateway(cfgs, 15)
 	gw.startHeartbeatMonitor(5 * time.Second)
 
@@ -213,3 +205,4 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8000", handler))
 
 }
+*/
