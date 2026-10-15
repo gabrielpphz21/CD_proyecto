@@ -8,6 +8,12 @@ import EnergyTransactionView from "./components/EnergyTransactionView";
 import TenantView from "./components/TenantView";
 import DestinationView from "./components/DestinationView";
 import TakeOffView from "./components/TakeOffView";
+import SateliteTable from "./components/SateliteTable";
+import RocketTable from "./components/RocketsTable";
+import EnergyTransactionsTable from "./components/EnergyTransactionsTable";
+import TenantTable from "./components/TenantsTable";
+import TakeOffTable from "./components/TakeOffTable";
+import DestinationTable from "./components/TakeOffTable";
 
 function App() {
   var coo = [
@@ -28,6 +34,12 @@ function App() {
       <TenantView tenant_id={2}></TenantView>
       <DestinationView destination_id={1}></DestinationView>
       <TakeOffView takeOff_id={1}></TakeOffView>
+      <SateliteTable></SateliteTable>
+      <RocketTable></RocketTable>
+      <EnergyTransactionsTable></EnergyTransactionsTable>
+      <TenantTable></TenantTable>
+      <TakeOffTable></TakeOffTable>
+      <DestinationTable></DestinationTable>
     </div>
   );
 }
