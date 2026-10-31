@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	pb "protoc/proto_gen"
 
 	"github.com/jackc/pgx/v5"
@@ -109,6 +110,7 @@ func (s *Server) CreateHyperRocket(ctx context.Context, r *pb.CreateHyperRocketR
 	hr_p := &HyperRocket{}
 	if r.HyperRocket == nil {
 		return nil, status.Error(codes.InvalidArgument, "el hyper cohete es requerido")
+
 	}
 	hr_p.Id = int(r.HyperRocket.Id)
 	hr_p.Fuel = float64(r.HyperRocket.Fuel)
@@ -119,7 +121,9 @@ func (s *Server) CreateHyperRocket(ctx context.Context, r *pb.CreateHyperRocketR
 	hr_p.Z = float64(r.HyperRocket.Z)
 	err1 := insert_hyperrocket(hr_p, s.conn)
 	if err1 != nil {
+		log.Print("error creando hyper cohete: ", err1)
 		return nil, status.Error(codes.Unavailable, "error creando hyper cohete")
+
 	}
 	return &pb.CreateHyperRocketResponse{Success: true}, nil
 }

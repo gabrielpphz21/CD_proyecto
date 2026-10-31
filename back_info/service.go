@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"fmt"
+	"log"
 	pb "protoc/proto_gen"
 
 	"github.com/jackc/pgx/v5"
@@ -98,12 +99,15 @@ func (s *TenantServer) CreateTenant(ctx context.Context, r *pb.CreateTenantReque
 }
 
 func (s *TenantServer) GetTenantId(ctx context.Context, r *pb.GetTenantIdRequest) (*pb.GetTenantIdResponse, error) {
-	dest, err := get_TenantId(s.conn, fmt.Sprint(r.Id))
+	tnt, err := get_TenantId(s.conn, fmt.Sprint(r.Id))
 	if err != nil {
 		return nil, status.Error(codes.Unavailable, "error llamando tenants")
 	}
+	if tnt == nil {
+		return nil, status.Errorf(codes.NotFound, "Tenant %d no existe", r.Id)
+	}
 
-	return &pb.GetTenantIdResponse{Tenant: dest.To_proto()}, nil
+	return &pb.GetTenantIdResponse{Tenant: tnt.To_proto()}, nil
 }
 
 func (s *TenantServer) UpdateTenant(ctx context.Context, r *pb.UpdateTenantRequest) (*pb.UpdateTenantResponse, error) {
@@ -115,6 +119,7 @@ func (s *TenantServer) UpdateTenant(ctx context.Context, r *pb.UpdateTenantReque
 	t.Name = r.Tenant.Name
 	t.Tax_id = r.Tenant.TaxId
 	if err := update_tenant(t, s.conn); err != nil {
+		log.Print("Error actualizando el tenant: ", err)
 		return nil, status.Error(codes.Unavailable, "error actualizando tenant")
 	}
 	return &pb.UpdateTenantResponse{Success: true}, nil
@@ -122,6 +127,7 @@ func (s *TenantServer) UpdateTenant(ctx context.Context, r *pb.UpdateTenantReque
 
 func (s *TenantServer) DeleteTenant(ctx context.Context, r *pb.DeleteTenantRequest) (*pb.DeleteTenantResponse, error) {
 	if err := delete_tenant(fmt.Sprint(r.Id), s.conn); err != nil {
+		log.Print("error borrando tenant: ", err)
 		return nil, status.Error(codes.Unavailable, "error borrando tenant")
 	}
 	return &pb.DeleteTenantResponse{Success: true}, nil
@@ -147,7 +153,9 @@ func (s *EnergyTransactionServer) GetEnergyTransactionId(ctx context.Context, r 
 	if err != nil {
 		return nil, status.Error(codes.Unavailable, "error llamando transacciones de energia")
 	}
-
+	if et == nil {
+		return nil, status.Errorf(codes.NotFound, "EnergyTransaction %d no existe", r.Id)
+	}
 	return &pb.GetEnergyTransactionIdResponse{EnergyTransaction: et.To_proto()}, nil
 }
 
@@ -180,6 +188,7 @@ func (s *EnergyTransactionServer) UpdateEnergyTransaction(ctx context.Context, r
 	et.State = r.EnergyTransaction.State
 	et.Date = r.EnergyTransaction.Date
 	if err := update_energyTransaction(et, s.conn); err != nil {
+		log.Print("error actualizando transacción de energía: ", err)
 		return nil, status.Error(codes.Unavailable, "error actualizando transacción de energía")
 	}
 	return &pb.UpdateEnergyTransactionResponse{Success: true}, nil
@@ -187,6 +196,7 @@ func (s *EnergyTransactionServer) UpdateEnergyTransaction(ctx context.Context, r
 
 func (s *EnergyTransactionServer) DeleteEnergyTransaction(ctx context.Context, r *pb.DeleteEnergyTransactionRequest) (*pb.DeleteEnergyTransactionResponse, error) {
 	if err := delete_energyTransaction(fmt.Sprint(r.Id), s.conn); err != nil {
+		log.Print("error borrando transacción de energía: ", err)
 		return nil, status.Error(codes.Unavailable, "error borrando transacción de energía")
 	}
 	return &pb.DeleteEnergyTransactionResponse{Success: true}, nil
@@ -197,6 +207,7 @@ func (s *EnergyTransactionServer) DeleteEnergyTransaction(ctx context.Context, r
 func (s *DestinationServer) GetDestination(ctx context.Context, r *pb.GetDestinationRequest) (*pb.GetDestinationResponse, error) {
 	dests, err := get_destinations(s.conn)
 	if err != nil {
+
 		return nil, status.Error(codes.Unavailable, "error llamando destinos")
 	}
 
@@ -211,6 +222,9 @@ func (s *DestinationServer) GetDestinationId(ctx context.Context, r *pb.GetDesti
 	dest, err := get_destinationsId(s.conn, fmt.Sprint(r.Id))
 	if err != nil {
 		return nil, status.Error(codes.Unavailable, "error llamando destinos")
+	}
+	if dest == nil {
+		return nil, status.Errorf(codes.NotFound, "Destination %d no existe", r.Id)
 	}
 
 	return &pb.GetDestinationIdResponse{Destination: dest.To_proto()}, nil
@@ -271,6 +285,9 @@ func (s *TakeOffServer) GetTakeOffId(ctx context.Context, r *pb.GetTakeOffIdRequ
 	if err != nil {
 		return nil, status.Error(codes.Unavailable, "error llamando despegues")
 	}
+	if t_o == nil {
+		return nil, status.Errorf(codes.NotFound, "EnergyTransaction %d no existe", r.Id)
+	}
 
 	return &pb.GetTakeOffIdResponse{TakeOff: t_o.To_proto()}, nil
 }
@@ -296,10 +313,13 @@ func (s *TakeOffServer) UpdateTakeOff(ctx context.Context, r *pb.UpdateTakeOffRe
 	}
 	to := &TakeOff{}
 	to.Id = int(r.TakeOff.Id)
+	log.Print("PROCESANDO TAKEOFF CON ID=: ", fmt.Sprint(r.TakeOff.Id))
 	to.Rocket = int(r.TakeOff.Rocket)
 	to.Date = r.TakeOff.Date
 	to.Runway = int(r.TakeOff.Runway)
 	if err := update_takeoff(to, s.conn); err != nil {
+		log.Print("error actualizando despegue: ", err)
+		log.Print("id: ", fmt.Sprint(to.Id))
 		return nil, status.Error(codes.Unavailable, "error actualizando despegue")
 	}
 	return &pb.UpdateTakeOffResponse{Success: true}, nil

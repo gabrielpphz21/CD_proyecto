@@ -12,7 +12,11 @@
 # de cada comando.
 # =============================================================================
 
-repetir flags (pega esto también)
+export HOST="localhost:8000"
+export PROTO_DIR="protoc/api"
+export PROTO_FILE="instructions.proto" 
+
+#alias para no repetir flags (pega esto también)
 G="grpcurl -plaintext -import-path $PROTO_DIR -proto $PROTO_FILE"
 
 # Si prefieres no usar la variable G, cada comando de abajo ya la usa como: $G -d '{...}' $HOST servicio/Metodo
@@ -78,7 +82,7 @@ $G -d '{"satelite": {"id": 10, "tenant": 2}}' $HOST SateliteService/UpdateSateli
 # --- HyperSatelite ---
 
 # Crear hyper satélite
-$G -d '{"hyper_satelite": {"id": 1, "energy": 1500.5, "parts": "{\"panel_solar\": 2, \"antena\": 1, \"bateria\": {\"tipo\": \"litio\", \"capacidad_wh\": 5000}}", "state": "active", "x": 10.5, "y": 20.3, "z": 400.0, "date": "2026-10-30"}}' $HOST SateliteService/CreateHyperSatelite
+$G -d '{"hyper_satelite": {"id": 2, "energy": 1500.5, "parts": "{\"panel_solar\": 2, \"antena\": 1, \"bateria\": {\"tipo\": \"litio\", \"capacidad_wh\": 5000}}", "state": "active", "x": 10.5, "y": 20.3, "z": 400.0, "date": "2026-10-30"}}' $HOST SateliteService/CreateHyperSatelite
 # Obtener info del satélite (incluye sus hyper satélites)
 $G -d '{"id": 1}' $HOST SateliteService/GetSateliteInfo
 
@@ -147,7 +151,7 @@ $G -d '{}' $HOST TakeOffService/GetTakeOff
 $G -d '{"id": 1}' $HOST TakeOffService/GetTakeOffId
 
 # Actualizar despegue
-$G -d '{"take_off": {"id": 1, "rocket": 1, "date": "2026-11-02", "runway": 1}}' $HOST TakeOffService/UpdateTakeOff
+$G -d '{"take_off": {"id": 7, "rocket": 1, "date": "2026-11-02", "runway": 100}}' $HOST TakeOffService/UpdateTakeOff
 
 
 # =============================================================================
@@ -162,10 +166,10 @@ $G -d '{"energy_transaction": {"volume": 100.0, "origin": 2, "destination": 1, "
 $G -d '{}' $HOST EnergyTransactionService/GetEnergyTransaction
 
 # Obtener transacción por id
-$G -d '{"id": 7}' $HOST EnergyTransactionService/GetEnergyTransactionId
+$G -d '{"id": 2}' $HOST EnergyTransactionService/GetEnergyTransactionId
 
 # Actualizar transacción
-$G -d '{"energy_transaction": {"id": 7, "volume": 250.75, "origin": 1, "destination": 2, "state": "completed", "date": "2026-10-30"}}' $HOST EnergyTransactionService/UpdateEnergyTransaction
+$G -d '{"energy_transaction": {"id": 2, "volume": 250.75, "origin": 11, "destination": 3, "state": "completed", "date": "2026-10-30"}}' $HOST EnergyTransactionService/UpdateEnergyTransaction
 
 
 # =============================================================================
@@ -173,8 +177,7 @@ $G -d '{"energy_transaction": {"id": 7, "volume": 250.75, "origin": 1, "destinat
 # =============================================================================
 
 # Borrar transacciones de energía
-$G -d '{"id": 1}' $HOST EnergyTransactionService/DeleteEnergyTransaction
-$G -d '{"id": 2}' $HOST EnergyTransactionService/DeleteEnergyTransaction
+$G -d '{"id": 7}' $HOST EnergyTransactionService/DeleteEnergyTransaction
 
 # Borrar despegues
 $G -d '{"id": 1}' $HOST TakeOffService/DeleteTakeOff
@@ -202,4 +205,4 @@ $G -d '{"id": 2}' $HOST SateliteService/DeleteSatelite
 
 # Borrar tenants
 $G -d '{"id": 1}' $HOST TenantService/DeleteTenant
-$G -d '{"id": 2}' $HOST TenantService/DeleteTenant
+$G -d '{"id": 20}' $HOST TenantService/DeleteTenant

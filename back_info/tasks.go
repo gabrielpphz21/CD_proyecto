@@ -137,7 +137,7 @@ func insert_energyTransaction(e_transaction *EnergyTransaction, connection *pgx.
 }
 
 func delete_energyTransaction(e_transaction_id string, connection *pgx.Conn) error {
-	query := "DELETE FROM envergy_transactions WHERE id = $1"
+	query := "DELETE FROM energy_transactions WHERE id = $1"
 	log.Printf(
 		"QUERY  conn=%p query=%s",
 		conn,
@@ -210,10 +210,11 @@ func get_energyTransactionsId(connection *pgx.Conn, energy_transaction_id string
 	e_t.Date = date_p.Format("2006-01-02 15:04:05")
 
 	if err != nil {
-		return e_t, nil
+		return nil, err
 	}
+	//log.Print("ERROR EN E_TRANSACTIONS ID: ", energy_transaction_id)
 
-	return nil, err
+	return e_t, nil
 
 }
 
@@ -327,13 +328,14 @@ func delete_takeoff(takeoff_id string, connection *pgx.Conn) error {
 }
 
 func update_takeoff(takeoff *TakeOff, connection *pgx.Conn) error {
-	query := "UPDATE take_offs SET rocket = $1, date=$2, runway=$3, WHERE id = $4"
+	query := "UPDATE take_offs SET rocket = $1, date=$2, runway=$3 WHERE id = $4"
 	log.Printf(
 		"QUERY  conn=%p query=%s",
 		conn,
 		query,
 	)
-	r, err := connection.Exec(context.Background(), query, takeoff.Rocket, takeoff.Date, takeoff.Runway)
+	log.Printf("ANTES DE LA CONSULTA TAKEOFF ID= %v", takeoff.Id)
+	r, err := connection.Exec(context.Background(), query, takeoff.Rocket, takeoff.Date, takeoff.Runway, takeoff.Id)
 	if r.RowsAffected() == 0 {
 		return errors.New("Takeoff with provided id does not exist")
 	}
