@@ -1,0 +1,397 @@
+syntax = "proto3";
+option go_package = "/proto_gen";
+
+service SateliteService{
+  rpc CreateSatelite(CreateSateliteRequest) returns (CreateSateliteResponse);
+  rpc CreateHyperSatelite(CreateHyperSateliteRequest) returns (CreateHyperSateliteResponse);
+  rpc GetSatelite(GetSateliteRequest) returns (GetSateliteResponse);
+  rpc GetSateliteInfo(GetSateliteInfoRequest) returns (GetSateliteInfoResponse);
+  rpc UpdateSatelite(UpdateSateliteRequest) returns (UpdateSateliteResponse);
+  rpc DeleteSatelite(DeleteSateliteRequest) returns (DeleteSateliteResponse);
+  rpc DeleteHyperSatelite(DeleteHyperSateliteRequest) returns (DeleteHyperSateliteResponse);
+}
+
+service RocketService{
+  rpc CreateRocket(CreateRocketRequest) returns (CreateRocketResponse);
+  rpc CreateHyperRocket(CreateHyperRocketRequest) returns (CreateHyperRocketResponse);
+  rpc GetRocket(GetRocketRequest) returns (GetRocketResponse);
+  rpc GetRocketInfo(GetRocketInfoRequest) returns (GetRocketInfoResponse);
+  rpc UpdateRocket(UpdateRocketRequest) returns (UpdateRocketResponse);
+  rpc DeleteRocket(DeleteRocketRequest) returns (DeleteRocketResponse);
+  rpc DeleteHyperRocket(DeleteHyperRocketRequest) returns (DeleteHyperRocketResponse);
+}
+
+service TenantService{
+  rpc CreateTenant(CreateTenantRequest) returns (CreateTenantResponse);
+  rpc GetTenant(GetTenantRequest) returns (GetTenantResponse);
+  rpc GetTenantId(GetTenantIdRequest) returns (GetTenantIdResponse);
+  rpc UpdateTenant(UpdateTenantRequest) returns (UpdateTenantResponse);
+  rpc DeleteTenant(DeleteTenantRequest) returns (DeleteTenantResponse);
+}
+
+service TakeOffService{
+  rpc CreateTakeOff(CreateTakeOffRequest) returns (CreateTakeOffResponse);
+  rpc GetTakeOff(GetTakeOffRequest) returns (GetTakeOffResponse);
+  rpc GetTakeOffId(GetTakeOffIdRequest) returns (GetTakeOffIdResponse);
+  rpc UpdateTakeOff(UpdateTakeOffRequest) returns (UpdateTakeOffResponse);
+  rpc DeleteTakeOff(DeleteTakeOffRequest) returns (DeleteTakeOffResponse);
+}
+
+service DestinationService{
+  rpc CreateDestination(CreateDestinationRequest) returns (CreateDestinationResponse);
+  rpc GetDestination(GetDestinationRequest) returns (GetDestinationResponse);
+  rpc GetDestinationId(GetDestinationIdRequest) returns (GetDestinationIdResponse);
+  rpc UpdateDestination(UpdateDestinationRequest) returns (UpdateDestinationResponse);
+  rpc DeleteDestination(DeleteDestinationRequest) returns (DeleteDestinationResponse);
+}
+
+service EnergyTransactionService{
+  rpc CreateEnergyTransaction(CreateEnergyTransactionRequest) returns (CreateEnergyTransactionResponse);
+  rpc GetEnergyTransaction(GetEnergyTransactionRequest) returns (GetEnergyTransactionResponse);
+  rpc GetEnergyTransactionId(GetEnergyTransactionIdRequest) returns (GetEnergyTransactionIdResponse);
+  rpc UpdateEnergyTransaction(UpdateEnergyTransactionRequest) returns (UpdateEnergyTransactionResponse);
+  rpc DeleteEnergyTransaction(DeleteEnergyTransactionRequest) returns (DeleteEnergyTransactionResponse);
+}
+
+
+message HyperRocket {
+  int32 id =1;
+  float fuel=2;
+  string parts=3;
+  string state=4;
+  float x=5;
+  float y=6;
+  float z=7;
+  string date=8;
+}
+
+message Rocket{
+  int32 id=1;
+  int32 satelite=2;
+}
+
+message HyperSatelite {
+  int32 id =1;
+  float energy=2;
+  string parts=3;
+  string state=4;
+  float x=5;
+  float y=6;
+  float z=7;
+  string date=8;
+}
+
+message Satelite{
+  int32 id=1;
+  int32 tenant=2;
+}
+
+message EnergyTransaction{
+  int32 id=1;
+  float volume = 2;
+  int32 origin = 3;
+  int32 destination = 4;
+  string state = 5;
+  string date = 6;
+}
+
+message Tenant{
+  int32 id=1 ;
+  string name =2 ;
+  string tax_id=3;
+}
+
+message Destination{
+  int32 id=1;
+  string planet=2;
+  string state = 3;
+}
+
+message TakeOff{
+  int32 id =1;
+  int32 rocket=2;
+  string date=3;
+  int32 runway=4;
+}
+
+//Getters de muchos
+message GetSateliteRequest{
+  
+}
+
+message GetSateliteResponse{
+  repeated Satelite satelites=1;
+}
+
+message GetRocketRequest{
+  
+}
+
+message GetRocketResponse{
+  repeated Rocket rockets=1;
+}
+
+message GetTenantRequest{
+  
+}
+
+message GetTenantResponse{
+  repeated Tenant tenants=1;
+}
+
+message GetEnergyTransactionRequest{
+  
+}
+
+message GetEnergyTransactionResponse{
+  repeated EnergyTransaction energy_trasactions=1;
+}
+
+message GetDestinationRequest{
+  
+}
+
+message GetDestinationResponse{
+  repeated Destination destinations=1;
+}
+
+message GetTakeOffRequest{
+  
+}
+
+message GetTakeOffResponse{
+  repeated TakeOff take_offs=1;
+}
+
+// Getters por id
+message GetSateliteInfoRequest{
+  int32 id=1;
+}
+
+message GetSateliteInfoResponse {
+   Satelite satelite=1;
+   repeated HyperSatelite hyper_satelite=2;
+}
+
+message GetRocketInfoRequest{
+  int32 id=1;
+}
+
+message GetRocketInfoResponse{
+  Rocket rocket=1;
+  repeated HyperRocket hyper_rocket = 2;
+}
+
+message GetTenantIdRequest{
+  int32 id=1;
+}
+
+message GetTenantIdResponse{
+  Tenant tenant=1;
+}
+
+message GetEnergyTransactionIdRequest{
+  int32 id=1;
+}
+
+message GetEnergyTransactionIdResponse{
+  EnergyTransaction energy_transaction = 1;
+}
+
+message GetDestinationIdRequest{
+  int32 id=1;
+}
+
+message GetDestinationIdResponse{
+  Destination destination =1;
+}
+
+message GetTakeOffIdRequest{
+  int32 id=1;
+}
+
+message GetTakeOffIdResponse{
+  TakeOff take_off =1;
+}
+
+//UPDATERS
+message UpdateSateliteRequest{
+  Satelite satelite =1;
+  
+}
+
+message UpdateSateliteResponse{
+  bool success=1;
+}
+
+message UpdateRocketRequest{
+  Rocket rocket =1;
+}
+
+message UpdateRocketResponse{
+  bool success=1;
+}
+
+message UpdateTenantRequest{
+  Tenant tenant =1;
+}
+
+message UpdateTenantResponse{
+  bool success=1;
+}
+
+message UpdateDestinationRequest{
+  Destination destination =1;
+}
+
+message UpdateDestinationResponse{
+  bool success=1;
+}
+
+message UpdateTakeOffRequest{
+  TakeOff take_off =1;
+}
+
+message UpdateTakeOffResponse{
+  bool success=1;
+}
+
+message UpdateEnergyTransactionRequest{
+  EnergyTransaction energy_transaction =1;
+}
+
+message UpdateEnergyTransactionResponse{
+  bool success=1;
+}
+
+//Creates
+
+message CreateSateliteRequest{
+  Satelite satelite=1;
+}
+
+message CreateSateliteResponse{
+  bool success=1;
+}
+
+message CreateRocketRequest{
+  Rocket rocket=1;
+}
+
+message CreateHyperSateliteRequest{
+  HyperSatelite hyper_satelite =1;
+}
+
+message CreateHyperSateliteResponse{
+  bool success =1;
+}
+
+message CreateRocketResponse{
+  bool success=1;
+}
+
+message CreateHyperRocketRequest{
+  HyperRocket hyper_rocket =1;
+}
+
+message CreateHyperRocketResponse{
+  bool success =1;
+}
+
+message CreateTenantRequest{
+  Tenant tenant=1;
+}
+
+message CreateTenantResponse{
+  bool success=1;
+}
+
+message CreateDestinationRequest{
+  Destination destination=1;
+}
+
+message CreateDestinationResponse{
+  bool success=1;
+}
+
+message CreateTakeOffRequest{
+  TakeOff take_off=1;
+}
+
+message CreateTakeOffResponse{
+  bool success=1;
+}
+
+message CreateEnergyTransactionRequest{
+  EnergyTransaction energy_transaction=1;
+}
+
+message CreateEnergyTransactionResponse{
+  bool success=1;
+}
+
+// DELETES
+
+message DeleteSateliteRequest{
+  int32 id=1;
+}
+
+message DeleteSateliteResponse{
+  bool success=1;
+}
+
+message DeleteRocketRequest{
+  int32 id=1;
+}
+
+message DeleteRocketResponse{
+  bool success=1;
+}
+
+message DeleteTenantRequest{
+  int32 id=1;
+}
+
+message DeleteTenantResponse{
+  bool success=1;
+}
+
+message DeleteDestinationRequest{
+  int32 id=1;
+}
+
+message DeleteDestinationResponse{
+  bool success=1;
+}
+
+message DeleteTakeOffRequest{
+  int32 id=1;
+}
+
+message DeleteTakeOffResponse{
+  bool success=1;
+}
+
+message DeleteEnergyTransactionRequest{
+  int32 id=1;
+}
+
+message DeleteEnergyTransactionResponse{
+  bool success=1;
+}
+
+message DeleteHyperSateliteRequest{
+  int32 id=1;
+}
+
+message DeleteHyperSateliteResponse{
+  bool success=1;
+}
+
+message DeleteHyperRocketRequest{
+  int32 id=1;
+}
+
+message DeleteHyperRocketResponse{
+  bool success=1;
+}

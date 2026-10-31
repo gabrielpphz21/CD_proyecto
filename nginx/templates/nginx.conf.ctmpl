@@ -10,7 +10,7 @@ http {
              Every time that list changes (a backend registers,
              deregisters, or fails its check), this whole file is
              re-rendered and nginx is told to reload. */}}
-        {{ range service "back_info" }}
+        {{ range service "back-info" }}
         server {{ .Address }}:{{ .Port }} max_fails=3 fail_timeout=30s;
         {{ else }}
         # No healthy "backend" instances registered in Consul right now.
@@ -23,7 +23,7 @@ http {
     upstream back_satelite_pool {
         least_conn;
 
-        {{ range service "back_satelite" }}
+        {{ range service "back-satelite" }}
         server {{ .Address }}:{{ .Port }} max_fails=3 fail_timeout=30s;
         {{ else }}
         
@@ -34,7 +34,7 @@ http {
     upstream back_rocket_pool {
         least_conn;
 
-        {{ range service "back_rocket" }}
+        {{ range service "back-rocket" }}
         server {{ .Address }}:{{ .Port }} max_fails=3 fail_timeout=30s;
         {{ else }}
         
@@ -44,74 +44,31 @@ http {
 
 
     server {
-        listen 8000;
-        # CORS para el frontend
-        add_header Access-Control-Allow-Origin "http://localhost:5173" always;
-        add_header Access-Control-Allow-Methods "GET, POST, PUT, PATCH, DELETE, OPTIONS" always;
-        add_header Access-Control-Allow-Headers "Authorization, Content-Type, Accept, Origin, X-Requested-With" always;
+        listen 8000 http2;
 
-        location /satelite {
-            proxy_pass http://back_satelite_pool;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
+        location /SateliteService {
+            grpc_pass grpc://back_satelite_pool;
+            
         }
 
-        location /rocket {
-            proxy_pass http://back_rocket_pool;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
+        location /RocketService {
+            grpc_pass grpc://back_rocket_pool;
         }
 
-        location /hyper-satelite {
-            proxy_pass http://back_satelite_pool;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-        }
-
-        location /hyper-rocket {
-            proxy_pass http://back_rocket_pool;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
-        }
-
-        location /tenant {
-            proxy_pass http://back_info_pool;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
+        location /TenantService {
+            grpc_pass grpc://back_info_pool;
         }
         
-        location /take-off {
-            proxy_pass http://back_info_pool;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
+        location /TakeOffService {
+            grpc_pass grpc://back_info_pool;
         }
 
-        location /energy-transaction {
-            proxy_pass http://back_info_pool;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
+        location /EnergyTransactionService {
+            grpc_pass grpc://back_info_pool;
         }
 
-        location /destination {
-            proxy_pass http://back_info_pool;
-            proxy_set_header Host $host;
-            proxy_set_header X-Real-IP $remote_addr;
-            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-            proxy_set_header X-Forwarded-Proto $scheme;
+        location /DestinationService {
+            grpc_pass grpc://back_info_pool;
         }
 
         location /heartbeat {

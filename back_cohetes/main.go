@@ -2,30 +2,25 @@ package main
 
 import (
 	"bytes"
-	"context"
 	"encoding/json"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	pb "protoc/proto_gen"
+
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/reflection"
 )
 
 var instanceID = "not known"
-
-func withInstanceHeader(next http.HandlerFunc) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("X-Instance-Id", instanceID)
-		next(w, r)
-	}
-}
-
-func heartbeatHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("backend alive"))
-}
 
 func getEnv(key, fallback string) string {
 	if v := os.Getenv(key); v != "" {
@@ -37,11 +32,12 @@ func getEnv(key, fallback string) string {
 func registerWithConsul(consulAddr string) error {
 	payload := map[string]any{
 		"ID":      instanceID,
-		"Name":    "back_rocket",
+		"Name":    "back-rocket",
 		"Address": instanceID, // resolvable via Docker's embedded DNS
-		"Port":    8080,
+		"Port":    9000,
 		"Check": map[string]any{
-			"HTTP":                           fmt.Sprintf("http://%s:8080/heartbeat", instanceID),
+			"GRPC":                           fmt.Sprintf("%s:9000", instanceID),
+			"GRPCUseTLS":                     false,
 			"Interval":                       "5s",
 			"Timeout":                        "2s",
 			"DeregisterCriticalServiceAfter": "1m",
@@ -98,59 +94,63 @@ func main() {
 	if v := os.Getenv("INSTANCE_ID"); v != "" {
 		instanceID = v
 	}
-	consulAddr := getEnv("CONSUL_HTTP_ADDR", "http://consul:8500")
 
-	if err := registerWithConsul(consulAddr); err != nil {
-		// Non-fatal: the service still runs and serves requests, it just
-		// won't be discoverable via Consul until this succeeds. Logged
-		// loudly because silently running "invisible" is a confusing
-		// failure mode.
-		log.Printf("WARNING: %v", err)
-	}
+	db_conn, err := conn()
 
-	mux := http.NewServeMux()
-	conn, err := conn()
 	if err != nil {
-		log.Fatal("Error al conectar con la BD")
+		log.Fatal("Base de datos caída")
 	}
 
-	mux.HandleFunc("/rocket", withInstanceHeader(func(w http.ResponseWriter, r *http.Request) {
-		rocket_Handler(conn, w, r)
-	}))
+	lis, err1 := net.Listen("tcp", ":9000")
+	if err1 != nil {
+		log.Fatalf("failed to listen: %v", err1)
+	}
 
-	mux.HandleFunc("/rocket/", withInstanceHeader(func(w http.ResponseWriter, r *http.Request) {
-		rocket_Handler(conn, w, r)
-	}))
+	grpcServer := grpc.NewServer()
 
-	mux.HandleFunc("/hyper-rocket", withInstanceHeader(func(w http.ResponseWriter, r *http.Request) {
-		HyperRocketHandler(conn, w, r)
-	}))
+	pb.RegisterRocketServiceServer(grpcServer, &Server{conn: db_conn})
 
-	mux.HandleFunc("/hyper-rocket/", withInstanceHeader(func(w http.ResponseWriter, r *http.Request) {
-		HyperRocketHandler(conn, w, r)
-	}))
+	hs := health.NewServer()
+	healthpb.RegisterHealthServer(grpcServer, hs)
+	hs.SetServingStatus("", healthpb.HealthCheckResponse_SERVING)
 
-	mux.HandleFunc("/heartbeat", withInstanceHeader(heartbeatHandler))
+	reflection.Register(grpcServer)
 
-	srv := &http.Server{Addr: ":8080", Handler: mux}
-
+	consulAddr := getEnv("CONSUL_HTTP_ADDR", "http://consul:8500")
 	// Graceful shutdown: on SIGTERM/SIGINT (what `docker stop` sends),
 	// deregister from Consul BEFORE the process actually exits, so
 	// gateways stop getting routed to a backend that's already gone.
 	sigCh := make(chan os.Signal, 1)
 	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+	defer signal.Stop(sigCh)
 	go func() {
 		<-sigCh
 		log.Printf("shutting down %s", instanceID)
+		hs.SetServingStatus("", healthpb.HealthCheckResponse_NOT_SERVING)
 		deregisterFromConsul(consulAddr)
-		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		srv.Shutdown(ctx)
+
+		stopped := make(chan struct{})
+		go func() {
+			grpcServer.GracefulStop()
+			close(stopped)
+		}()
+
+		select {
+		case <-stopped:
+		case <-time.After(5 * time.Second):
+			log.Printf("graceful stop timed out, forcing")
+			grpcServer.Stop()
+		}
 	}()
 
-	log.Printf("backend %s listening on :8080", instanceID)
-	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		log.Fatal(err)
+	go func() {
+		if err := registerWithConsul(consulAddr); err != nil {
+			log.Printf("WARNING: %v", err)
+		}
+	}()
+
+	if err := grpcServer.Serve(lis); err != nil {
+		log.Fatalf("grpc server error: %v", err)
 	}
 
 }

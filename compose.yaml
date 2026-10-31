@@ -10,10 +10,12 @@ services:
       - microservices-net
 
 
-  back_info-1:
-    build: ./back_info
+  back-info-1:
+    build:
+      context: .
+      dockerfile: back_info/Dockerfile
     environment:
-      - INSTANCE_ID=back_info-1
+      - INSTANCE_ID=back-info-1
       - CONSUL_HTTP_ADDR=http://consul:8500
     depends_on:
       psqlDB:
@@ -23,10 +25,12 @@ services:
     networks:
      - microservices-net
 
-  back_info-2:
-    build: ./back_info
+  back-info-2:
+    build: 
+      context: .
+      dockerfile: back_info/Dockerfile
     environment:
-      - INSTANCE_ID=back_info-2
+      - INSTANCE_ID=back-info-2
       - CONSUL_HTTP_ADDR=http://consul:8500
     depends_on:
       psqlDB:
@@ -36,63 +40,12 @@ services:
     networks:
      - microservices-net
 
-  back_info-3:
-    build: ./back_info
+  back-info-3:
+    build: 
+      context: .
+      dockerfile: back_info/Dockerfile
     environment:
-      - INSTANCE_ID=back_info-3
-      - CONSUL_HTTP_ADDR=http://consul:8500
-    depends_on:
-      psqlDB:
-        condition: service_healthy
-      consul:
-        condition: service_started
-    networks:
-     - microservices-net
-
-
-  back_rockets-1:
-    build: ./back_cohetes
-    environment:
-      - INSTANCE_ID=back_rockets-1
-      - CONSUL_HTTP_ADDR=http://consul:8500
-    depends_on:
-      psqlDB:
-        condition: service_healthy
-      consul:
-        condition: service_started
-    networks:
-     - microservices-net
-
-  back_rockets-2:
-    build: ./back_cohetes
-    environment:
-      - INSTANCE_ID=back_rockets-2
-      - CONSUL_HTTP_ADDR=http://consul:8500
-    depends_on:
-      psqlDB:
-        condition: service_healthy
-      consul:
-        condition: service_started
-    networks:
-     - microservices-net
-
-  back_rockets-3:
-    build: ./back_cohetes
-    environment:
-      - INSTANCE_ID=back_rockets-3
-      - CONSUL_HTTP_ADDR=http://consul:8500
-    depends_on:
-      psqlDB:
-        condition: service_healthy
-      consul:
-        condition: service_started
-    networks:
-     - microservices-net
-
-  back_satelites-1:
-    build: ./back_satelites
-    environment:
-      - INSTANCE_ID=back_satelites-1
+      - INSTANCE_ID=back-info-3
       - CONSUL_HTTP_ADDR=http://consul:8500
     depends_on:
       psqlDB:
@@ -103,10 +56,57 @@ services:
      - microservices-net
 
 
-  back_satelites-2:
-    build: ./back_satelites
+  back-rockets-1:
+    build: 
+      context: .
+      dockerfile: back_cohetes/Dockerfile
     environment:
-      - INSTANCE_ID=back_satelites-2
+      - INSTANCE_ID=back-rockets-1
+      - CONSUL_HTTP_ADDR=http://consul:8500
+    depends_on:
+      psqlDB:
+        condition: service_healthy
+      consul:
+        condition: service_started
+    networks:
+     - microservices-net
+
+  back-rockets-2:
+    build: 
+      context: .
+      dockerfile: back_cohetes/Dockerfile
+    environment:
+      - INSTANCE_ID=back-rockets-2
+      - CONSUL_HTTP_ADDR=http://consul:8500
+    depends_on:
+      psqlDB:
+        condition: service_healthy
+      consul:
+        condition: service_started
+    networks:
+     - microservices-net
+
+  back-rockets-3:
+    build: 
+      context: .
+      dockerfile: back_cohetes/Dockerfile
+    environment:
+      - INSTANCE_ID=back-rockets-3
+      - CONSUL_HTTP_ADDR=http://consul:8500
+    depends_on:
+      psqlDB:
+        condition: service_healthy
+      consul:
+        condition: service_started
+    networks:
+     - microservices-net
+
+  back-satelites-1:
+    build:
+      context: .
+      dockerfile: back_satelites/Dockerfile
+    environment:
+      - INSTANCE_ID=back-satelites-1
       - CONSUL_HTTP_ADDR=http://consul:8500
     depends_on:
       psqlDB:
@@ -117,10 +117,28 @@ services:
      - microservices-net
 
 
-  back_satelites-3:
-    build: ./back_satelites
+  back-satelites-2:
+    build:
+      context: .
+      dockerfile: back_satelites/Dockerfile
     environment:
-      - INSTANCE_ID=back_satelites-3
+      - INSTANCE_ID=back-satelites-2
+      - CONSUL_HTTP_ADDR=http://consul:8500
+    depends_on:
+      psqlDB:
+        condition: service_healthy
+      consul:
+        condition: service_started
+    networks:
+     - microservices-net
+
+
+  back-satelites-3:
+    build:
+      context: .
+      dockerfile: back_satelites/Dockerfile
+    environment:
+      - INSTANCE_ID=back-satelites-3
       - CONSUL_HTTP_ADDR=http://consul:8500
     depends_on:
       psqlDB:
@@ -137,26 +155,30 @@ services:
       - CONSUL_HTTP_ADDR=consul:8500
     ports:
     - "8000:8000"
+    - "8001:8001"
+    - "8002:8002"
+    - "8003:8003"
+
     depends_on:
-      back_info-1:
+      back-info-1:
         condition: service_started
-      back_info-2:
+      back-info-2:
         condition: service_started
-      back_info-3:
-        condition: service_started
-
-      back_rockets-1:
-        condition: service_started
-      back_rockets-2:
-        condition: service_started
-      back_rockets-3:
+      back-info-3:
         condition: service_started
 
-      back_satelites-1:
+      back-rockets-1:
         condition: service_started
-      back_satelites-2:
+      back-rockets-2:
         condition: service_started
-      back_satelites-3:
+      back-rockets-3:
+        condition: service_started
+
+      back-satelites-1:
+        condition: service_started
+      back-satelites-2:
+        condition: service_started
+      back-satelites-3:
         condition: service_started
       consul:
         condition: service_started
