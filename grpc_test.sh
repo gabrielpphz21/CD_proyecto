@@ -165,7 +165,7 @@ $G -d '{}' $HOST EnergyTransactionService/GetEnergyTransaction
 $G -d '{"id": 7}' $HOST EnergyTransactionService/GetEnergyTransactionId
 
 # Actualizar transacción
-$G -d '{"energy_transaction": {"id": 1, "volume": 250.75, "origin": 1, "destination": 2, "state": "completed", "date": "2026-10-30"}}' $HOST EnergyTransactionService/UpdateEnergyTransaction
+$G -d '{"energy_transaction": {"id": 7, "volume": 250.75, "origin": 1, "destination": 2, "state": "completed", "date": "2026-10-30"}}' $HOST EnergyTransactionService/UpdateEnergyTransaction
 
 
 # =============================================================================
