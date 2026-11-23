@@ -37,20 +37,24 @@ type TakeOff struct {
 	Runway int    `json:"runway"`
 }
 
-func insert_tenant(tenant *Tenant, connection *pgx.Conn) error {
-	query := "INSERT INTO tenants (name, tax_id) VALUES ($1, $2)"
+func insert_tenant(tenant *Tenant, connection *pgx.Conn) (int, error) {
+	query := "INSERT INTO tenants (name, tax_id) VALUES ($1, $2) RETURNING id;"
 	log.Printf(
 		"QUERY  conn=%p query=%s",
 		conn,
 		query,
 	)
-	_, err := connection.Exec(context.Background(), query, tenant.Name, tenant.Tax_id)
+	var id_d int
+	err := connection.QueryRow(context.Background(), query, tenant.Name, tenant.Tax_id).Scan(&id_d)
+	if err != nil {
+		return 0, err
+	}
 
-	return err
+	return id_d, nil
 }
 
 func delete_tenant(tenant_id string, connection *pgx.Conn) error {
-	query := "DELETE FROM tenants WHERE id = $1"
+	query := "DELETE FROM tenants WHERE id = $1;"
 	log.Printf(
 		"QUERY  conn=%p query=%s",
 		conn,
@@ -62,7 +66,7 @@ func delete_tenant(tenant_id string, connection *pgx.Conn) error {
 }
 
 func update_tenant(tenant *Tenant, connection *pgx.Conn) error {
-	query := "UPDATE tenants SET name = $1, tax_id=$2 WHERE id = $3"
+	query := "UPDATE tenants SET name = $1, tax_id=$2 WHERE id = $3;"
 	log.Printf(
 		"QUERY  conn=%p query=%s",
 		conn,
@@ -77,7 +81,7 @@ func update_tenant(tenant *Tenant, connection *pgx.Conn) error {
 }
 
 func get_Tenants(connection *pgx.Conn) ([]Tenant, error) {
-	query := "SELECT * FROM tenants ORDER BY id DESC LIMIT 100"
+	query := "SELECT * FROM tenants ORDER BY id DESC LIMIT 100;"
 	log.Printf(
 		"QUERY  conn=%p query=%s",
 		conn,
@@ -108,7 +112,7 @@ func get_Tenants(connection *pgx.Conn) ([]Tenant, error) {
 }
 
 func get_TenantId(connection *pgx.Conn, tenant_id string) (*Tenant, error) {
-	query := "SELECT * FROM tenants WHERE id=$1 LIMIT 1"
+	query := "SELECT * FROM tenants WHERE id=$1 LIMIT 1;"
 	log.Printf(
 		"QUERY  conn=%p query=%s",
 		conn,
@@ -123,17 +127,22 @@ func get_TenantId(connection *pgx.Conn, tenant_id string) (*Tenant, error) {
 
 }
 
-func insert_energyTransaction(e_transaction *EnergyTransaction, connection *pgx.Conn) error {
-	query := "INSERT INTO energy_transactions (volume, origin, destination, state, date) VALUES ($1, $2, $3, $4, $5)"
+func insert_energyTransaction(e_transaction *EnergyTransaction, connection *pgx.Conn) (int, error) {
+	query := "INSERT INTO energy_transactions (volume, origin, destination, state, date) VALUES ($1, $2, $3, $4, $5) RETURNING id;"
 	log.Printf(
 		"QUERY  conn=%p query=%s",
 		conn,
 		query,
 	)
-	_, err := connection.Exec(context.Background(), query, e_transaction.Volume, e_transaction.Origin, e_transaction.Destination,
-		e_transaction.State, e_transaction.Date)
+	var id_d int
+	err := connection.QueryRow(context.Background(), query, e_transaction.Volume, e_transaction.Origin, e_transaction.Destination,
+		e_transaction.State, e_transaction.Date).Scan(&id_d)
 
-	return err
+	if err != nil {
+		return 0, err
+	}
+
+	return id_d, nil
 }
 
 func delete_energyTransaction(e_transaction_id string, connection *pgx.Conn) error {
@@ -218,16 +227,20 @@ func get_energyTransactionsId(connection *pgx.Conn, energy_transaction_id string
 
 }
 
-func insert_destination(destination *Destination, connection *pgx.Conn) error {
-	query := "INSERT INTO destinations (planet, state) VALUES ($1, $2)"
+func insert_destination(destination *Destination, connection *pgx.Conn) (int, error) {
+	query := "INSERT INTO destinations (planet, state) VALUES ($1, $2) RETURNING id"
 	log.Printf(
 		"QUERY  conn=%p query=%s",
 		conn,
 		query,
 	)
-	_, err := connection.Exec(context.Background(), query, destination.Planet, destination.State)
+	var id_d int
+	err := connection.QueryRow(context.Background(), query, destination.Planet, destination.State).Scan(&id_d)
+	if err != nil {
+		return 0, err
+	}
 
-	return err
+	return id_d, nil
 }
 
 func delete_destination(destination_id string, connection *pgx.Conn) error {
@@ -303,16 +316,20 @@ func get_destinationsId(connection *pgx.Conn, destination_id string) (*Destinati
 	return dtn, nil
 }
 
-func insert_takeoff(takeoff *TakeOff, connection *pgx.Conn) error {
-	query := "INSERT INTO take_offs (rocket, date, runway) VALUES ($1, $2, $3)"
+func insert_takeoff(takeoff *TakeOff, connection *pgx.Conn) (int, error) {
+	query := "INSERT INTO take_offs (rocket, date, runway) VALUES ($1, $2, $3) RETURNING id"
 	log.Printf(
 		"QUERY  conn=%p query=%s",
 		conn,
 		query,
 	)
-	_, err := connection.Exec(context.Background(), query, takeoff.Rocket, takeoff.Date, takeoff.Runway)
+	var id_d int
+	err := connection.QueryRow(context.Background(), query, takeoff.Rocket, takeoff.Date, takeoff.Runway).Scan(&id_d)
+	if err != nil {
+		return 0, err
+	}
 
-	return err
+	return id_d, nil
 }
 
 func delete_takeoff(takeoff_id string, connection *pgx.Conn) error {

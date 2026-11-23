@@ -5,4 +5,8 @@ use (
 	./back_info
 	./back_satelites
 	./protoc
+	./kafkax
+	./events
+	./cohetes_consumer
+	./satelites_consumer
 )

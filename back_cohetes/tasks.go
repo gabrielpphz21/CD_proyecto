@@ -26,15 +26,19 @@ type HyperRocket struct {
 	Date  string  `json:"date"`
 }
 
-func insert_rocket(rocket *Rocket, connection *pgx.Conn) error {
-	query := "INSERT INTO rockets (satelite) VALUES ($1)"
+func insert_rocket(rocket *Rocket, connection *pgx.Conn) (int, error) {
+	query := "INSERT INTO rockets (satelite) VALUES ($1) RETURNING id"
 	log.Printf(
 		"QUERY  conn=%p query=%s",
 		conn,
 		query,
 	)
-	_, err := connection.Exec(context.Background(), query, rocket.Satelite)
-	return err
+	var id_d int
+	err := connection.QueryRow(context.Background(), query, rocket.Satelite).Scan(&id_d)
+	if err != nil {
+		return 0, err
+	}
+	return id_d, nil
 }
 
 func delete_rocket(id string, connection *pgx.Conn) error {

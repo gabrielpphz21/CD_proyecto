@@ -6,7 +6,7 @@ COPY go.work go.work.sum ./
 COPY protoc/ ./protoc/
 COPY back_info/ ./back_info/
 
-RUN go work edit -dropuse=./back_satelites -dropuse=./back_cohetes
+RUN go work edit -dropuse=./back_satelites -dropuse=./back_cohetes -dropuse= ./satelites_consumer
 
 WORKDIR /golangApp/back_info
 RUN CGO_ENABLED=0 GOOS=linux go build -o /golangApp/main

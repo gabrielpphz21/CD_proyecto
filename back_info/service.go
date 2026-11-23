@@ -89,13 +89,17 @@ func (s *TenantServer) CreateTenant(ctx context.Context, r *pb.CreateTenantReque
 		return nil, status.Error(codes.InvalidArgument, "el tenant es requerido")
 	}
 	t := &Tenant{}
-	t.Id = int(r.Tenant.Id)
+
 	t.Name = r.Tenant.Name
 	t.Tax_id = r.Tenant.TaxId
-	if err := insert_tenant(t, s.conn); err != nil {
+
+	id_d, err := insert_tenant(t, s.conn)
+
+	if err != nil {
 		return nil, status.Error(codes.Unavailable, "error creando tenant")
 	}
-	return &pb.CreateTenantResponse{Success: true}, nil
+
+	return &pb.CreateTenantResponse{Id: int32(id_d)}, nil
 }
 
 func (s *TenantServer) GetTenantId(ctx context.Context, r *pb.GetTenantIdRequest) (*pb.GetTenantIdResponse, error) {
@@ -170,10 +174,12 @@ func (s *EnergyTransactionServer) CreateEnergyTransaction(ctx context.Context, r
 	et.Destination = int(r.EnergyTransaction.Destination)
 	et.State = r.EnergyTransaction.State
 	et.Date = r.EnergyTransaction.Date
-	if err := insert_energyTransaction(et, s.conn); err != nil {
+	id_d, err := insert_energyTransaction(et, s.conn)
+	if err != nil {
 		return nil, status.Error(codes.Unavailable, "error creando transacción de energía")
 	}
-	return &pb.CreateEnergyTransactionResponse{Success: true}, nil
+
+	return &pb.CreateEnergyTransactionResponse{Id: int32(id_d)}, nil
 }
 
 func (s *EnergyTransactionServer) UpdateEnergyTransaction(ctx context.Context, r *pb.UpdateEnergyTransactionRequest) (*pb.UpdateEnergyTransactionResponse, error) {
@@ -235,13 +241,15 @@ func (s *DestinationServer) CreateDestination(ctx context.Context, r *pb.CreateD
 		return nil, status.Error(codes.InvalidArgument, "el destino es requerido")
 	}
 	d := &Destination{}
-	d.Id = int(r.Destination.Id)
+
 	d.Planet = r.Destination.Planet
 	d.State = r.Destination.State
-	if err := insert_destination(d, s.conn); err != nil {
+	id_d, err := insert_destination(d, s.conn)
+	if err != nil {
 		return nil, status.Error(codes.Unavailable, "error creando destino")
 	}
-	return &pb.CreateDestinationResponse{Success: true}, nil
+
+	return &pb.CreateDestinationResponse{Id: int32(id_d)}, nil
 }
 
 func (s *DestinationServer) UpdateDestination(ctx context.Context, r *pb.UpdateDestinationRequest) (*pb.UpdateDestinationResponse, error) {
@@ -301,10 +309,12 @@ func (s *TakeOffServer) CreateTakeOff(ctx context.Context, r *pb.CreateTakeOffRe
 	to.Rocket = int(r.TakeOff.Rocket)
 	to.Date = r.TakeOff.Date
 	to.Runway = int(r.TakeOff.Runway)
-	if err := insert_takeoff(to, s.conn); err != nil {
+	id_d, err := insert_takeoff(to, s.conn)
+	if err != nil {
 		return nil, status.Error(codes.Unavailable, "error creando despegue")
 	}
-	return &pb.CreateTakeOffResponse{Success: true}, nil
+
+	return &pb.CreateTakeOffResponse{Id: int32(id_d)}, nil
 }
 
 func (s *TakeOffServer) UpdateTakeOff(ctx context.Context, r *pb.UpdateTakeOffRequest) (*pb.UpdateTakeOffResponse, error) {

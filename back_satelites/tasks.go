@@ -25,15 +25,19 @@ type HyperSatelite struct {
 	Date   string  `json:"date"`
 }
 
-func insert_satelite(satelite *Satelite, connection *pgx.Conn) error {
-	query := "INSERT INTO satelites (tenant) VALUES ($1)"
+func insert_satelite(satelite *Satelite, connection *pgx.Conn) (int, error) {
+	query := "INSERT INTO satelites (tenant) VALUES ($1) RETURNING id"
 	log.Printf(
 		"QUERY  conn=%p query=%s",
 		conn,
 		query,
 	)
-	_, err := connection.Exec(context.Background(), query, satelite.Tenant)
-	return err
+	var id_d int
+	err := connection.QueryRow(context.Background(), query, satelite.Tenant).Scan(&id_d)
+	if err != nil {
+		return 0, err
+	}
+	return id_d, nil
 }
 
 func delete_satelite(id string, connection *pgx.Conn) error {

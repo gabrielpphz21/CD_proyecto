@@ -271,7 +271,7 @@ message CreateSateliteRequest{
 }
 
 message CreateSateliteResponse{
-  bool success=1;
+  int32 id=1;
 }
 
 message CreateRocketRequest{
@@ -287,7 +287,7 @@ message CreateHyperSateliteResponse{
 }
 
 message CreateRocketResponse{
-  bool success=1;
+  int32 id=1;
 }
 
 message CreateHyperRocketRequest{
@@ -303,7 +303,7 @@ message CreateTenantRequest{
 }
 
 message CreateTenantResponse{
-  bool success=1;
+  int32 id=1;
 }
 
 message CreateDestinationRequest{
@@ -311,7 +311,7 @@ message CreateDestinationRequest{
 }
 
 message CreateDestinationResponse{
-  bool success=1;
+  int32 id=1;
 }
 
 message CreateTakeOffRequest{
@@ -319,7 +319,7 @@ message CreateTakeOffRequest{
 }
 
 message CreateTakeOffResponse{
-  bool success=1;
+  int32 id=1;
 }
 
 message CreateEnergyTransactionRequest{
@@ -327,7 +327,7 @@ message CreateEnergyTransactionRequest{
 }
 
 message CreateEnergyTransactionResponse{
-  bool success=1;
+  int32 id=1;
 }
 
 // DELETES

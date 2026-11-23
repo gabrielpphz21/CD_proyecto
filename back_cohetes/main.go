@@ -3,16 +3,17 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"events"
 	"fmt"
+	"kafkax"
 	"log"
 	"net"
 	"net/http"
 	"os"
 	"os/signal"
+	pb "protoc/proto_gen"
 	"syscall"
 	"time"
-
-	pb "protoc/proto_gen"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -91,6 +92,15 @@ func deregisterFromConsul(consulAddr string) {
 }
 
 func main() {
+	broker := getenv("KAFKA_BROKER", "localhost:9092")
+
+	if err := kafkax.EnsureTopic(broker, events.TopicRocketsCreated, 3); err != nil {
+		log.Fatalf("ensure topic: %v", err)
+	}
+
+	producer := kafkax.NewWriter([]string{broker}, events.TopicRocketsCreated)
+	defer producer.Close()
+
 	if v := os.Getenv("INSTANCE_ID"); v != "" {
 		instanceID = v
 	}
@@ -108,7 +118,7 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 
-	pb.RegisterRocketServiceServer(grpcServer, &Server{conn: db_conn})
+	pb.RegisterRocketServiceServer(grpcServer, &Server{conn: db_conn, producer: producer})
 
 	hs := health.NewServer()
 	healthpb.RegisterHealthServer(grpcServer, hs)
@@ -153,4 +163,11 @@ func main() {
 		log.Fatalf("grpc server error: %v", err)
 	}
 
+}
+
+func getenv(k, def string) string {
+	if v := os.Getenv(k); v != "" {
+		return v
+	}
+	return def
 }

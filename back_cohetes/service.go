@@ -2,18 +2,24 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"events"
 	"fmt"
 	"log"
 	pb "protoc/proto_gen"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/segmentio/kafka-go"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 type Server struct {
 	pb.UnimplementedRocketServiceServer
-	conn *pgx.Conn
+	conn     *pgx.Conn
+	producer *kafka.Writer
 }
 
 func (r *Rocket) To_proto() *pb.Rocket {
@@ -76,11 +82,41 @@ func (s *Server) CreateRocket(ctx context.Context, r *pb.CreateRocketRequest) (*
 	}
 	rocket_p.Id = int(r.Rocket.Id)
 	rocket_p.Satelite = int(r.Rocket.Satelite)
-	err1 := insert_rocket(rocket_p, s.conn)
+	id_d, err1 := insert_rocket(rocket_p, s.conn)
 	if err1 != nil {
 		return nil, status.Error(codes.Unavailable, "error creando cohete")
 	}
-	return &pb.CreateRocketResponse{Success: true}, nil
+
+	rocket_p.Id = int(id_d)
+	var rocket_p2 *events.Rocket
+	rocket_p2 = (*events.Rocket)(rocket_p)
+
+	evt := events.RocketCreated{
+		EventID:   uuid.NewString(),
+		Rocket_pa: rocket_p2,
+		CreatedAt: time.Now().UTC(),
+	}
+
+	payload, err2 := json.Marshal(evt)
+	if err2 != nil {
+		log.Print("ERROR while parsing JSON : ", err2)
+		return &pb.CreateRocketResponse{Id: int32(id_d)}, nil
+	}
+
+	err3 := s.producer.WriteMessages(ctx, kafka.Message{
+		Key:     []byte(evt.EventID),
+		Value:   payload,
+		Headers: []kafka.Header{{Key: "event-type", Value: []byte("RocketCreated")}},
+	})
+
+	if err3 != nil {
+		log.Print("Could not publish the event: ", evt)
+		return &pb.CreateRocketResponse{Id: int32(id_d)}, nil
+	}
+
+	fmt.Printf("rocket accepted, rocket event published: %v", evt.EventID)
+
+	return &pb.CreateRocketResponse{Id: int32(id_d)}, nil
 }
 
 func (s *Server) DeleteRocket(ctx context.Context, r *pb.DeleteRocketRequest) (*pb.DeleteRocketResponse, error) {

@@ -2198,7 +2198,7 @@ func (x *CreateSateliteRequest) GetSatelite() *Satelite {
 
 type CreateSateliteResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2233,11 +2233,11 @@ func (*CreateSateliteResponse) Descriptor() ([]byte, []int) {
 	return file_instructions_proto_rawDescGZIP(), []int{45}
 }
 
-func (x *CreateSateliteResponse) GetSuccess() bool {
+func (x *CreateSateliteResponse) GetId() int32 {
 	if x != nil {
-		return x.Success
+		return x.Id
 	}
-	return false
+	return 0
 }
 
 type CreateRocketRequest struct {
@@ -2374,7 +2374,7 @@ func (x *CreateHyperSateliteResponse) GetSuccess() bool {
 
 type CreateRocketResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2409,11 +2409,11 @@ func (*CreateRocketResponse) Descriptor() ([]byte, []int) {
 	return file_instructions_proto_rawDescGZIP(), []int{49}
 }
 
-func (x *CreateRocketResponse) GetSuccess() bool {
+func (x *CreateRocketResponse) GetId() int32 {
 	if x != nil {
-		return x.Success
+		return x.Id
 	}
-	return false
+	return 0
 }
 
 type CreateHyperRocketRequest struct {
@@ -2550,7 +2550,7 @@ func (x *CreateTenantRequest) GetTenant() *Tenant {
 
 type CreateTenantResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2585,11 +2585,11 @@ func (*CreateTenantResponse) Descriptor() ([]byte, []int) {
 	return file_instructions_proto_rawDescGZIP(), []int{53}
 }
 
-func (x *CreateTenantResponse) GetSuccess() bool {
+func (x *CreateTenantResponse) GetId() int32 {
 	if x != nil {
-		return x.Success
+		return x.Id
 	}
-	return false
+	return 0
 }
 
 type CreateDestinationRequest struct {
@@ -2638,7 +2638,7 @@ func (x *CreateDestinationRequest) GetDestination() *Destination {
 
 type CreateDestinationResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2673,11 +2673,11 @@ func (*CreateDestinationResponse) Descriptor() ([]byte, []int) {
 	return file_instructions_proto_rawDescGZIP(), []int{55}
 }
 
-func (x *CreateDestinationResponse) GetSuccess() bool {
+func (x *CreateDestinationResponse) GetId() int32 {
 	if x != nil {
-		return x.Success
+		return x.Id
 	}
-	return false
+	return 0
 }
 
 type CreateTakeOffRequest struct {
@@ -2726,7 +2726,7 @@ func (x *CreateTakeOffRequest) GetTakeOff() *TakeOff {
 
 type CreateTakeOffResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2761,11 +2761,11 @@ func (*CreateTakeOffResponse) Descriptor() ([]byte, []int) {
 	return file_instructions_proto_rawDescGZIP(), []int{57}
 }
 
-func (x *CreateTakeOffResponse) GetSuccess() bool {
+func (x *CreateTakeOffResponse) GetId() int32 {
 	if x != nil {
-		return x.Success
+		return x.Id
 	}
-	return false
+	return 0
 }
 
 type CreateEnergyTransactionRequest struct {
@@ -2814,7 +2814,7 @@ func (x *CreateEnergyTransactionRequest) GetEnergyTransaction() *EnergyTransacti
 
 type CreateEnergyTransactionResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Success       bool                   `protobuf:"varint,1,opt,name=success,proto3" json:"success,omitempty"`
+	Id            int32                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2849,11 +2849,11 @@ func (*CreateEnergyTransactionResponse) Descriptor() ([]byte, []int) {
 	return file_instructions_proto_rawDescGZIP(), []int{59}
 }
 
-func (x *CreateEnergyTransactionResponse) GetSuccess() bool {
+func (x *CreateEnergyTransactionResponse) GetId() int32 {
 	if x != nil {
-		return x.Success
+		return x.Id
 	}
-	return false
+	return 0
 }
 
 type DeleteSateliteRequest struct {
@@ -3678,37 +3678,37 @@ const file_instructions_proto_rawDesc = "" +
 	"\x1fUpdateEnergyTransactionResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\">\n" +
 	"\x15CreateSateliteRequest\x12%\n" +
-	"\bsatelite\x18\x01 \x01(\v2\t.SateliteR\bsatelite\"2\n" +
-	"\x16CreateSateliteResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"6\n" +
+	"\bsatelite\x18\x01 \x01(\v2\t.SateliteR\bsatelite\"(\n" +
+	"\x16CreateSateliteResponse\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\"6\n" +
 	"\x13CreateRocketRequest\x12\x1f\n" +
 	"\x06rocket\x18\x01 \x01(\v2\a.RocketR\x06rocket\"S\n" +
 	"\x1aCreateHyperSateliteRequest\x125\n" +
 	"\x0ehyper_satelite\x18\x01 \x01(\v2\x0e.HyperSateliteR\rhyperSatelite\"7\n" +
 	"\x1bCreateHyperSateliteResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"0\n" +
-	"\x14CreateRocketResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"K\n" +
+	"\asuccess\x18\x01 \x01(\bR\asuccess\"&\n" +
+	"\x14CreateRocketResponse\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\"K\n" +
 	"\x18CreateHyperRocketRequest\x12/\n" +
 	"\fhyper_rocket\x18\x01 \x01(\v2\f.HyperRocketR\vhyperRocket\"5\n" +
 	"\x19CreateHyperRocketResponse\x12\x18\n" +
 	"\asuccess\x18\x01 \x01(\bR\asuccess\"6\n" +
 	"\x13CreateTenantRequest\x12\x1f\n" +
-	"\x06tenant\x18\x01 \x01(\v2\a.TenantR\x06tenant\"0\n" +
-	"\x14CreateTenantResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"J\n" +
+	"\x06tenant\x18\x01 \x01(\v2\a.TenantR\x06tenant\"&\n" +
+	"\x14CreateTenantResponse\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\"J\n" +
 	"\x18CreateDestinationRequest\x12.\n" +
-	"\vdestination\x18\x01 \x01(\v2\f.DestinationR\vdestination\"5\n" +
-	"\x19CreateDestinationResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\";\n" +
+	"\vdestination\x18\x01 \x01(\v2\f.DestinationR\vdestination\"+\n" +
+	"\x19CreateDestinationResponse\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\";\n" +
 	"\x14CreateTakeOffRequest\x12#\n" +
-	"\btake_off\x18\x01 \x01(\v2\b.TakeOffR\atakeOff\"1\n" +
-	"\x15CreateTakeOffResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"c\n" +
+	"\btake_off\x18\x01 \x01(\v2\b.TakeOffR\atakeOff\"'\n" +
+	"\x15CreateTakeOffResponse\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\"c\n" +
 	"\x1eCreateEnergyTransactionRequest\x12A\n" +
-	"\x12energy_transaction\x18\x01 \x01(\v2\x12.EnergyTransactionR\x11energyTransaction\";\n" +
-	"\x1fCreateEnergyTransactionResponse\x12\x18\n" +
-	"\asuccess\x18\x01 \x01(\bR\asuccess\"'\n" +
+	"\x12energy_transaction\x18\x01 \x01(\v2\x12.EnergyTransactionR\x11energyTransaction\"1\n" +
+	"\x1fCreateEnergyTransactionResponse\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x05R\x02id\"'\n" +
 	"\x15DeleteSateliteRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x05R\x02id\"2\n" +
 	"\x16DeleteSateliteResponse\x12\x18\n" +

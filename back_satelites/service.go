@@ -2,17 +2,24 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"events"
 	"fmt"
+	"log"
 	pb "protoc/proto_gen"
+	"time"
 
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5"
+	"github.com/segmentio/kafka-go"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
 
 type Server struct {
 	pb.UnimplementedSateliteServiceServer
-	conn *pgx.Conn
+	conn     *pgx.Conn
+	producer *kafka.Writer
 }
 
 func (r *Satelite) To_proto() *pb.Satelite {
@@ -72,13 +79,42 @@ func (s *Server) CreateSatelite(ctx context.Context, r *pb.CreateSateliteRequest
 	if r.Satelite == nil {
 		return nil, status.Error(codes.InvalidArgument, "el satelite es requerido")
 	}
-	Satelite_p.Id = int(r.Satelite.Id)
+
 	Satelite_p.Tenant = int(r.Satelite.Tenant)
-	err1 := insert_satelite(Satelite_p, s.conn)
+	id_d, err1 := insert_satelite(Satelite_p, s.conn)
 	if err1 != nil {
 		return nil, status.Error(codes.Unavailable, "error creando satelite")
 	}
-	return &pb.CreateSateliteResponse{Success: true}, nil
+
+	var satelite_p2 *events.Satelite
+	satelite_p2 = (*events.Satelite)(Satelite_p)
+
+	evt := events.SateliteCreated{
+		EventID:     uuid.NewString(),
+		Satelite_pa: satelite_p2,
+		CreatedAt:   time.Now().UTC(),
+	}
+
+	payload, err2 := json.Marshal(evt)
+	if err2 != nil {
+		log.Print("ERROR while parsing JSON : ", err2)
+		return &pb.CreateSateliteResponse{Id: int32(id_d)}, nil
+	}
+
+	err3 := s.producer.WriteMessages(ctx, kafka.Message{
+		Key:     []byte(evt.EventID),
+		Value:   payload,
+		Headers: []kafka.Header{{Key: "event-type", Value: []byte("SateliteCreated")}},
+	})
+
+	if err3 != nil {
+		log.Print("Could not publish the event: ", evt)
+		return &pb.CreateSateliteResponse{Id: int32(id_d)}, nil
+	}
+
+	fmt.Printf("satelite %s accepted, satelite event published", evt.EventID)
+
+	return &pb.CreateSateliteResponse{Id: int32(id_d)}, nil
 }
 
 func (s *Server) DeleteSatelite(ctx context.Context, r *pb.DeleteSateliteRequest) (*pb.DeleteSateliteResponse, error) {

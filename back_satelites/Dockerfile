@@ -5,8 +5,9 @@ WORKDIR /golangApp
 COPY go.work go.work.sum ./
 COPY protoc/ ./protoc/
 COPY back_satelites/ ./back_satelites/
+COPY events/ ./events/
 
-RUN go work edit -dropuse=./back_cohetes -dropuse=./back_info
+RUN go work edit -dropuse=./back_cohetes -dropuse=./back_info -dropuse=./satelites_consumer -dropuse=./kafkax -dropuse=./cohetes_consumer
 
 WORKDIR /golangApp/back_satelites
 RUN CGO_ENABLED=0 GOOS=linux go build -o /golangApp/main
