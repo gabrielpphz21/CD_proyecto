@@ -16,6 +16,10 @@ export HOST="localhost:9000"
 export PROTO_DIR="protoc/api"
 export PROTO_FILE="instructions.proto" 
 
+export HOST="localhost:9001"
+export PROTO_DIR="protoc/api"
+export PROTO_FILE="instructions.proto" 
+
 export HOST="localhost:8000"
 export PROTO_DIR="protoc/api"
 export PROTO_FILE="instructions.proto" 
