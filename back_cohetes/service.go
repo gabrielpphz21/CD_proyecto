@@ -62,12 +62,14 @@ func (s *Server) GetRocketInfo(ctx context.Context, r *pb.GetRocketInfoRequest) 
 	rkt, hr, err := rocket_info(fmt.Sprint(r.Id), s.conn)
 
 	if err != nil {
+		fmt.Println(err.Error())
 		return nil, status.Error(codes.Unavailable, "error llamando info de cohete")
 	}
 	var hr_pb []*pb.HyperRocket
 	for _, hr_p := range hr {
 		hr_pb = append(hr_pb, hr_p.To_proto())
 	}
+
 	return &pb.GetRocketInfoResponse{
 		Rocket:      rkt.To_proto(),
 		HyperRocket: hr_pb,

@@ -3,16 +3,17 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"events"
 	"fmt"
+	"kafkax"
 	"log"
 	"net"
 	"net/http"
 	"os"
 	"os/signal"
+	pb "protoc/proto_gen"
 	"syscall"
 	"time"
-
-	pb "protoc/proto_gen"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -91,6 +92,16 @@ func deregisterFromConsul(consulAddr string) {
 }
 
 func main() {
+
+	broker := getEnv("KAFKA_BROKER", "localhost:9092")
+
+	if err := kafkax.EnsureTopic(broker, events.TopicRocketsCreated, 3); err != nil {
+		log.Fatalf("ensure topic: %v", err)
+	}
+
+	producer := kafkax.NewWriter([]string{broker}, events.TopicSatelitesCreated)
+	defer producer.Close()
+
 	if v := os.Getenv("INSTANCE_ID"); v != "" {
 		instanceID = v
 	}
@@ -108,7 +119,7 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 
-	pb.RegisterSateliteServiceServer(grpcServer, &Server{conn: db_conn})
+	pb.RegisterSateliteServiceServer(grpcServer, &Server{conn: db_conn, producer: producer})
 
 	hs := health.NewServer()
 	healthpb.RegisterHealthServer(grpcServer, hs)
@@ -149,8 +160,8 @@ func main() {
 		}
 	}()
 
-	if err := grpcServer.Serve(lis); err != nil {
-		log.Fatalf("grpc server error: %v", err)
+	if errGRPC := grpcServer.Serve(lis); errGRPC != nil {
+		log.Fatalf("grpc server error: %v", errGRPC)
 	}
 
 }

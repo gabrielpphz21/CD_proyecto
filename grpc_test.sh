@@ -88,7 +88,7 @@ $G -d '{"satelite": {"id": 10, "tenant": 2}}' $HOST SateliteService/UpdateSateli
 # Crear hyper satélite
 $G -d '{"hyper_satelite": {"id": 2, "energy": 1500.5, "parts": "{\"panel_solar\": 2, \"antena\": 1, \"bateria\": {\"tipo\": \"litio\", \"capacidad_wh\": 5000}}", "state": "active", "x": 10.5, "y": 20.3, "z": 400.0, "date": "2026-10-30"}}' $HOST SateliteService/CreateHyperSatelite
 # Obtener info del satélite (incluye sus hyper satélites)
-$G -d '{"id": 1}' $HOST SateliteService/GetSateliteInfo
+$G -d '{"id": 15}' $HOST SateliteService/GetSateliteInfo
 
 
 # =============================================================================
@@ -115,7 +115,7 @@ $G -d '{"hyper_rocket": {"id": 1, "fuel": 5500.5, "parts": "{\"motor\": {\"model
 $G -d '{"hyper_rocket": {"id": 2, "fuel": 5500.5, "parts": "motor,tanque", "state": "launched", "x": 5.0, "y": 5.0, "z": 100.0, "date": "2026-10-31"}}' $HOST RocketService/CreateHyperRocket
 
 # Obtener info del cohete (incluye sus hyper cohetes)
-$G -d '{"id": 1}' $HOST RocketService/GetRocketInfo
+$G -d '{"id": 5}' $HOST RocketService/GetRocketInfo
 
 
 # =============================================================================
