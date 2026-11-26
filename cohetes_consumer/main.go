@@ -3,6 +3,8 @@ package main
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"events"
 	"fmt"
@@ -17,6 +19,8 @@ import (
 
 	"github.com/jackc/pgx/v5"
 	"github.com/segmentio/kafka-go"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials"
 )
 
 // In-memory dedup for the demo. In production use a DB unique constraint
@@ -180,10 +184,50 @@ func deregisterFromConsul(consulAddr string) {
 	log.Printf("deregistered %s from consul", instanceID)
 }
 
+func loadClientTLSCredentials() (credentials.TransportCredentials, error) {
+	pemServerCA, err := os.ReadFile("/etc/ssl/certs/grpc/ca.crt")
+	if err != nil {
+		return nil, err
+	}
+	certPool := x509.NewCertPool()
+	if !certPool.AppendCertsFromPEM(pemServerCA) {
+		return nil, fmt.Errorf("failed to add server CA certificate")
+	}
+
+	clientCert, err := tls.LoadX509KeyPair("/etc/ssl/certs/grpc/tls.crt", "/etc/ssl/certs/grpc/tls.key")
+	if err != nil {
+		return nil, err
+	}
+
+	config := &tls.Config{
+		Certificates: []tls.Certificate{clientCert},
+		RootCAs:      certPool,
+		ServerName:   "grpc-server-service", // Matches SAN in Server Cert
+		MinVersion:   tls.VersionTLS13,
+	}
+
+	return credentials.NewTLS(config), nil
+}
+
 func main() {
 	conn_db, err_1 := conn()
 	consulAddr := getEnv("CONSUL_HTTP_ADDR", "http://consul:8500")
 	instanceID = getEnv("INSTANCE_ID", "cohetes-consumer")
+
+	creds, err := loadClientTLSCredentials()
+	if err != nil {
+		log.Fatalf("Failed to load client TLS credentials: %v", err)
+	}
+
+	// Connect to Kubernetes internal DNS service address
+	target := "grpc-server-service.default.svc.cluster.local:50051"
+
+	log.Printf("Connecting to %s with mTLS...", target)
+	conn_mtls, err := grpc.NewClient(target, grpc.WithTransportCredentials(creds))
+	if err != nil {
+		log.Fatalf("Failed to connect: %v", err)
+	}
+	defer conn_mtls.Close()
 
 	// Start a lightweight health endpoint in the background (GPTOSO health check)
 	go func() {

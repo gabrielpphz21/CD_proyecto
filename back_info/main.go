@@ -2,6 +2,8 @@ package main
 
 import (
 	"bytes"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"fmt"
 	"log"
@@ -9,10 +11,11 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	pb "protoc/proto_gen"
 	"syscall"
 	"time"
 
-	pb "protoc/proto_gen"
+	"google.golang.org/grpc/credentials"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/health"
@@ -90,10 +93,50 @@ func deregisterFromConsul(consulAddr string) {
 	log.Printf("deregistered %s from consul", instanceID)
 }
 
+func loadClientTLSCredentials() (credentials.TransportCredentials, error) {
+	pemServerCA, err := os.ReadFile("/etc/ssl/certs/grpc/ca.crt")
+	if err != nil {
+		return nil, err
+	}
+	certPool := x509.NewCertPool()
+	if !certPool.AppendCertsFromPEM(pemServerCA) {
+		return nil, fmt.Errorf("failed to add server CA certificate")
+	}
+
+	clientCert, err := tls.LoadX509KeyPair("/etc/ssl/certs/grpc/tls.crt", "/etc/ssl/certs/grpc/tls.key")
+	if err != nil {
+		return nil, err
+	}
+
+	config := &tls.Config{
+		Certificates: []tls.Certificate{clientCert},
+		RootCAs:      certPool,
+		ServerName:   "grpc-server-service", // Matches SAN in Server Cert
+		MinVersion:   tls.VersionTLS13,
+	}
+
+	return credentials.NewTLS(config), nil
+}
+
 func main() {
 	if v := os.Getenv("INSTANCE_ID"); v != "" {
 		instanceID = v
 	}
+
+	creds, err := loadClientTLSCredentials()
+	if err != nil {
+		log.Fatalf("Failed to load client TLS credentials: %v", err)
+	}
+
+	// Connect to Kubernetes internal DNS service address
+	target := "grpc-server-service.default.svc.cluster.local:50051"
+
+	log.Printf("Connecting to %s with mTLS...", target)
+	conn_mtls, err := grpc.NewClient(target, grpc.WithTransportCredentials(creds))
+	if err != nil {
+		log.Fatalf("Failed to connect: %v", err)
+	}
+	defer conn_mtls.Close()
 
 	db_conn, err := conn()
 
